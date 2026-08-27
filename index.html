@@ -1,0 +1,2952 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<title>Playbook de Gestão · CRM &amp; Engajamento — Cartão de TODOS</title>
+<meta name="description" content="Manual de operação, tecnologia, pessoas, governança e continuidade da área de CRM &amp; Engajamento do Cartão de TODOS." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f1117'/%3E%3Cpath d='M7 20h6l3-8 3 8h6' stroke='%2322c55e' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --bg:#0f1117; --bg2:#1a1d27; --card:#222539; --line:#2e3348;
+  --fg:#e8eaed; --fg2:#9ba1b0; --accent:#12a75e; --accent-lt:#4ade80;
+  --pos:#22c55e; --neg:#ef4444; --warn:#eab308;
+
+  --accent-08:rgba(18,167,94,.10);
+  --accent-14:rgba(18,167,94,.17);
+  --accent-28:rgba(18,167,94,.36);
+  --hair:rgba(255,255,255,.06);
+  --hair-2:rgba(255,255,255,.10);
+  --lit:rgba(255,255,255,.07);
+
+  --r:12px; --r-sm:8px; --r-lg:18px;
+  --ease:cubic-bezier(.22,.68,.24,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --t:.2s var(--ease);
+
+  --sh-1:0 1px 1px rgba(0,0,0,.28), 0 3px 8px rgba(0,0,0,.22);
+  --sh-2:0 1px 1px rgba(0,0,0,.34), 0 6px 16px rgba(0,0,0,.30), 0 18px 40px rgba(0,0,0,.24);
+  --sh-3:0 1px 1px rgba(0,0,0,.4), 0 10px 26px rgba(0,0,0,.38), 0 30px 70px rgba(0,0,0,.34);
+
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --disp:'Inter Tight','Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+
+  --nav-w:274px; --toc-w:224px; --head-h:58px;
+  --col:min(768px,100%);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--head-h) + 26px);-webkit-text-size-adjust:100%;overflow-x:clip}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:var(--sans);font-size:16px;line-height:1.75;
+  font-feature-settings:"cv05" 1,"ss01" 1;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+
+/* ============================================================
+   TEXTURA — grão + malha + brilhos
+   ============================================================ */
+.tex{position:fixed;inset:0;pointer-events:none;z-index:0}
+.tex--grain{
+  opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.tex--mesh{
+  opacity:.5;
+  background:
+    radial-gradient(720px 420px at 78% -8%, var(--accent-08), transparent 62%),
+    radial-gradient(560px 380px at 4% 12%, rgba(74,222,128,.05), transparent 60%),
+    radial-gradient(900px 500px at 50% 108%, rgba(18,167,94,.07), transparent 64%);
+}
+.tex--dots{
+  opacity:.4;
+  background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.055) 1px, transparent 0);
+  background-size:26px 26px;
+  -webkit-mask-image:linear-gradient(180deg,#000 0,transparent 62%);
+  mask-image:linear-gradient(180deg,#000 0,transparent 62%);
+}
+
+/* ============================================================
+   CURSOR
+   ============================================================ */
+.cur,.cur-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;
+  opacity:0;transition:opacity .3s ease,width .28s var(--ease-out),height .28s var(--ease-out),background .28s ease,border-color .28s ease}
+.cur{width:34px;height:34px;border:1px solid var(--accent-28);margin:-17px 0 0 -17px;
+  background:radial-gradient(circle,var(--accent-08),transparent 70%)}
+.cur-dot{width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:var(--accent-lt)}
+body.cur-on .cur,body.cur-on .cur-dot{opacity:1}
+body.cur-hot .cur{width:58px;height:58px;margin:-29px 0 0 -29px;border-color:rgba(74,222,128,.6);background:radial-gradient(circle,var(--accent-14),transparent 70%)}
+body.cur-hot .cur-dot{width:0;height:0}
+
+/* ============================================================
+   TOPO
+   ============================================================ */
+.progress{position:fixed;top:0;left:0;height:2px;width:100%;z-index:80;background:transparent}
+.progress__bar{height:100%;width:0;transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--accent),#2fbf72 55%,var(--accent-lt));
+  box-shadow:0 0 12px var(--accent-28)}
+
+.top{position:fixed;top:0;left:0;right:0;height:var(--head-h);z-index:75;
+  display:flex;align-items:center;gap:14px;padding:0 22px;
+  border-bottom:1px solid transparent;
+  background:transparent;transition:background .3s var(--ease),border-color .3s var(--ease),backdrop-filter .3s var(--ease)}
+.top.is-stuck{background:rgba(15,17,23,.9);backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);border-bottom-color:var(--line)}
+.top__mark{display:flex;align-items:center;gap:10px;color:var(--fg);text-decoration:none;font-family:var(--disp);font-weight:600;
+  letter-spacing:-.02em;font-size:14.5px;white-space:nowrap}
+.top__glyph{width:26px;height:26px;border-radius:7px;flex:none;
+  background:linear-gradient(150deg,#1c4a34,#16241d);border:1px solid var(--line);
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-1);
+  display:grid;place-items:center}
+.top__crumb{color:var(--fg2);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:0;transform:translateY(4px);transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.top.is-stuck .top__crumb{opacity:1;transform:none}
+.top__sep{color:var(--line);flex:none}
+.top__sp{flex:1}
+.top__name{overflow:hidden;text-overflow:ellipsis}
+.top__acts{display:flex;align-items:center;gap:8px}
+.burger{display:none}
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+.btn{position:relative;display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0));
+  color:var(--fg);font:500 13px/1 var(--sans);letter-spacing:-.005em;
+  cursor:pointer;text-decoration:none;white-space:nowrap;overflow:hidden;
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-1);
+  transition:transform .22s var(--ease-out),border-color var(--t),box-shadow .28s var(--ease),color var(--t)}
+.btn::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;
+  background:radial-gradient(120px circle at var(--mx,50%) var(--my,50%),var(--accent-14),transparent 60%);
+  transition:opacity .3s var(--ease)}
+.btn:hover{border-color:var(--accent-28);box-shadow:inset 0 1px 0 var(--lit),var(--sh-2),0 0 0 3px var(--accent-08)}
+.btn:hover::after{opacity:1}
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn__ar{display:inline-block;transition:transform .3s var(--ease-out)}
+.btn:hover .btn__ar{transform:translateX(3px)}
+.btn--pri{background:linear-gradient(180deg,#16b368,#0e8a4c);border-color:#22c06f;color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 6px rgba(6,58,33,.52),0 12px 28px rgba(9,74,42,.36)}
+.btn--pri:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 3px 10px rgba(6,58,33,.58),0 18px 42px rgba(9,74,42,.46),0 0 0 4px var(--accent-08)}
+.btn--icon{padding:8px;width:34px;justify-content:center}
+
+:where(a,button,input,summary,[tabindex]):focus-visible{
+  outline:2px solid var(--accent-lt);outline-offset:3px;border-radius:6px}
+
+/* ============================================================
+   ESTRUTURA
+   ============================================================ */
+.shell{position:relative;display:grid;
+  grid-template-columns:var(--nav-w) minmax(0,1fr) var(--toc-w);
+  max-width:1520px;margin:0 auto;padding:0 22px;gap:0}
+.main{min-width:0;padding-top:var(--head-h)}
+
+/* ---------- SIDEBAR ---------- */
+.nav{position:sticky;top:var(--head-h);align-self:start;height:calc(100dvh - var(--head-h));
+  display:flex;flex-direction:column;padding:22px 22px 0 0;border-right:1px solid var(--line);
+  margin-right:34px}
+.nav__search{position:relative;flex:none;margin-bottom:16px}
+.nav__search input{width:100%;padding:9px 12px 9px 33px;border-radius:var(--r-sm);
+  border:1px solid var(--line);background:rgba(0,0,0,.28);color:var(--fg);
+  font:400 13px/1.4 var(--sans);transition:border-color var(--t),box-shadow var(--t),background var(--t)}
+.nav__search input::placeholder{color:#6f7688}
+.nav__search input:focus{outline:none;border-color:var(--accent-28);background:rgba(0,0,0,.4);
+  box-shadow:0 0 0 3px var(--accent-08)}
+.nav__search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#6f7688;pointer-events:none}
+.nav__scroll{flex:1;overflow-y:auto;overscroll-behavior:contain;padding-bottom:26px;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14px,#000 calc(100% - 30px),transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0,#000 14px,#000 calc(100% - 30px),transparent 100%)}
+.nav__group{margin-bottom:20px}
+.nav__title{display:flex;align-items:baseline;gap:8px;margin:0 0 7px;padding:0 8px;
+  font:500 10.5px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#707890}
+.nav__title b{color:var(--accent-lt);font-weight:500}
+.nav__list{list-style:none;margin:0;padding:0;position:relative}
+.nav__ind{position:absolute;left:0;width:2px;height:0;border-radius:2px;background:var(--accent);
+  box-shadow:0 0 10px var(--accent-28);opacity:0;
+  transition:transform .34s var(--ease-out),height .34s var(--ease-out),opacity .2s ease}
+.nav__link{display:flex;gap:9px;align-items:baseline;padding:5px 9px;border-radius:7px;
+  color:var(--fg2);text-decoration:none;font-size:13.4px;line-height:1.45;
+  transition:color var(--t),background var(--t),transform .22s var(--ease-out)}
+.nav__link:hover{color:var(--fg);background:rgba(255,255,255,.045);transform:translateX(2px)}
+.nav__link.is-active{color:var(--fg);background:var(--accent-08)}
+.nav__n{flex:none;font:400 11px/1.6 var(--mono);color:#636b80;transition:color var(--t)}
+.nav__link:hover .nav__n,.nav__link.is-active .nav__n{color:var(--accent-lt)}
+.nav__link.is-hidden{display:none}
+.nav__group.is-hidden{display:none}
+.nav__empty{display:none;padding:10px;font-size:13px;color:var(--fg2)}
+.nav__empty.is-on{display:block}
+
+/* ---------- TOC ---------- */
+.toc{position:sticky;top:var(--head-h);align-self:start;height:calc(100dvh - var(--head-h));
+  overflow-y:auto;padding:34px 0 34px 26px;margin-left:34px}
+.toc__t{font:500 10.5px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:#707890;margin:0 0 12px}
+.toc__ring{display:flex;align-items:center;gap:10px;margin-bottom:20px;
+  font:400 11.5px/1 var(--mono);color:var(--fg2)}
+.toc__ring svg{flex:none;transform:rotate(-90deg)}
+.toc__ring circle{fill:none;stroke-width:2.5}
+.toc__ring .bg{stroke:var(--line)}
+.toc__ring .fg{stroke:var(--accent-lt);stroke-linecap:round;
+  transition:stroke-dashoffset .18s linear}
+.toc__list{list-style:none;margin:0;padding:0;border-left:1px solid var(--line)}
+.toc__list a{display:block;padding:4px 0 4px 13px;margin-left:-1px;
+  border-left:1px solid transparent;color:#7b8296;text-decoration:none;font-size:12.6px;line-height:1.5;
+  transition:color var(--t),border-color var(--t),transform .22s var(--ease-out)}
+.toc__list a:hover{color:var(--fg);transform:translateX(2px)}
+.toc__list a.is-active{color:var(--fg);border-left-color:var(--accent)}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{position:relative;padding:64px 0 22px}
+.hero__glow{position:absolute;left:-14%;top:-24%;width:640px;height:520px;pointer-events:none;
+  background:radial-gradient(closest-side,var(--accent-14),transparent 72%);filter:blur(14px)}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:5px 12px 5px 8px;
+  border:1px solid var(--line);border-radius:999px;background:rgba(0,0,0,.3);
+  box-shadow:inset 0 1px 0 var(--lit);
+  font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#a7adbe}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--pos);flex:none;
+  box-shadow:0 0 0 3px rgba(34,197,94,.16)}
+.hero h1{font-family:var(--disp);font-weight:700;letter-spacing:-.038em;line-height:1.02;
+  font-size:clamp(38px,6.4vw,68px);margin:20px 0 0;color:#f4f6fa}
+.hero h1 .dim{color:#8b93a8;background:linear-gradient(180deg,#c9d0e0,#6d7488);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero__sub{max-width:60ch;margin:20px 0 0;font-size:17.5px;line-height:1.68;color:var(--fg2)}
+.hero__sub strong{color:var(--fg);font-weight:500}
+.hero__meta{display:flex;flex-wrap:wrap;gap:0;margin:30px 0 0;
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0));
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-1)}
+.hero__meta div{flex:1 1 150px;padding:12px 16px;border-right:1px solid var(--line)}
+.hero__meta div:last-child{border-right:0}
+.hero__meta dt{font:500 10px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#707890;margin:0}
+.hero__meta dd{margin:4px 0 0;font-size:13.6px;color:var(--fg);font-weight:500}
+.hero__cta{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 0}
+
+/* ---------- PIPELINE (assinatura) ---------- */
+.pipe{position:relative;margin:52px 0 0;padding:26px 24px 20px;
+  border:1px solid var(--line);border-radius:var(--r-lg);
+  background:linear-gradient(180deg,rgba(34,37,57,.6),rgba(26,29,39,.35));
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-2);overflow:hidden}
+.pipe::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(560px 220px at 20% 0%,var(--accent-08),transparent 70%)}
+.pipe__cap{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:0 0 4px}
+.pipe__cap b{font:500 10.5px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-lt);font-weight:500}
+.pipe__cap span{font-size:13px;color:var(--fg2)}
+.pipe__svg{display:block;width:100%;height:auto;position:relative}
+.pipe__svg .track{stroke:var(--line);stroke-width:1.5;fill:none}
+.pipe__svg .flow{stroke:url(#pgrad);stroke-width:1.8;fill:none;stroke-linecap:round}
+.pipe__svg .node-box{fill:#1b1e2b;stroke:var(--line);stroke-width:1}
+.pipe__svg .node-lit .node-box{stroke:var(--accent-28)}
+.pipe__svg .node-t{font:500 11.5px/1 var(--sans);fill:#cdd2de;letter-spacing:-.01em}
+.pipe__svg .node-lit .node-t{fill:#fff}
+.pipe__svg .lbl{font:400 10px/1 var(--mono);fill:#707890;letter-spacing:.08em;text-transform:uppercase}
+.pipe__svg .pulse{fill:#fff}
+.pipe__svg .pulse-h{fill:var(--accent);opacity:.35}
+.pipe__vert{display:none;list-style:none;margin:6px 0 0;padding:0 0 0 20px;position:relative}
+.pipe__vert::before{content:"";position:absolute;left:4px;top:8px;bottom:8px;width:1px;
+  background:linear-gradient(180deg,var(--accent-28),var(--line))}
+.pipe__vert li{position:relative;padding:6px 0;font-size:13.5px;color:#cdd2de}
+.pipe__vert li::before{content:"";position:absolute;left:-19px;top:14px;width:7px;height:7px;
+  border-radius:50%;background:#1b1e2b;border:1px solid var(--accent-28)}
+.pipe__vert li:last-child{color:var(--fg2);font-style:italic}
+.pipe__foot{position:relative;margin:12px 0 0;font-size:12.5px;color:#7b8296;line-height:1.6}
+.pipe__foot code{font:400 11.5px/1 var(--mono);color:#a7adbe}
+
+/* ---------- FIGURAS ---------- */
+.figs{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:34px 0 0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.figs__i{display:flex;flex-direction:column;padding:18px 18px 18px 0;border-right:1px solid var(--line)}
+.figs__l{flex:1}
+.figs__i:last-child{border-right:0}
+.figs__i:not(:first-child){padding-left:18px}
+.figs__n{font:500 clamp(24px,3.2vw,32px)/1 var(--mono);color:#f4f6fa;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums}
+.figs__n em{font-style:normal;color:var(--accent-lt)}
+.figs__l{margin:8px 0 0;font-size:12.4px;line-height:1.45;color:var(--fg2)}
+.figs__s{align-self:flex-start}
+.figs__s{display:inline-block;margin:6px 0 0;font:400 10px/1 var(--mono);color:#636b80}
+
+/* ============================================================
+   TRILHAS
+   ============================================================ */
+.tracks{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0 0}
+.track{position:relative;display:block;padding:18px;border-radius:var(--r);
+  border:1px solid var(--line);text-decoration:none;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0));
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-1);
+  transition:transform .3s var(--ease-out),border-color var(--t),box-shadow .32s var(--ease)}
+.track::after{content:"";position:absolute;inset:0;opacity:0;pointer-events:none;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),var(--accent-14),transparent 62%);
+  transition:opacity .32s var(--ease)}
+.track:hover{transform:translateY(-4px);border-color:var(--accent-28);
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-3)}
+.track:hover::after{opacity:1}
+.track__k{font:500 10px/1.4 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--accent-lt)}
+.track__h{position:relative;margin:9px 0 0;font-family:var(--disp);font-weight:600;font-size:16.5px;
+  letter-spacing:-.02em;color:var(--fg)}
+.track__d{position:relative;margin:6px 0 0;font-size:13.2px;line-height:1.6;color:var(--fg2)}
+.track__go{position:relative;display:inline-flex;align-items:center;gap:6px;margin:12px 0 0;
+  font:500 12.4px/1 var(--sans);color:var(--accent-lt)}
+.track__go span{transition:transform .3s var(--ease-out)}
+.track:hover .track__go span{transform:translateX(4px)}
+
+/* ============================================================
+   PARTES + SEÇÕES
+   ============================================================ */
+.part{position:relative;margin:78px 0 0;padding:0 0 4px}
+.part__glow{position:absolute;left:-90px;top:-40px;width:420px;height:260px;pointer-events:none;
+  background:radial-gradient(closest-side,var(--accent-08),transparent 72%)}
+.part__rule{display:flex;align-items:center;gap:14px}
+.part__n{font:500 11px/1 var(--mono);letter-spacing:.16em;color:var(--accent-lt);flex:none}
+.part__line{flex:1;height:1px;background:linear-gradient(90deg,var(--accent-28),var(--line) 40%,transparent)}
+.part__time{font:400 10.5px/1 var(--mono);color:#636b80;flex:none}
+.part h2{position:relative;font-family:var(--disp);font-weight:600;letter-spacing:-.032em;
+  font-size:clamp(26px,3.6vw,36px);line-height:1.14;margin:14px 0 0;color:#f4f6fa}
+.part__d{position:relative;max-width:62ch;margin:10px 0 0;font-size:15px;line-height:1.7;color:var(--fg2)}
+
+.sec{position:relative;margin:44px 0 0;scroll-margin-top:calc(var(--head-h) + 26px)}
+.sec__h{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
+.sec__n{flex:none;font:500 12px/1.7 var(--mono);color:#636b80;text-decoration:none;
+  transition:color var(--t)}
+.sec__n:hover{color:var(--accent-lt)}
+.sec__h h3{margin:0;font-family:var(--disp);font-weight:600;letter-spacing:-.024em;
+  font-size:clamp(20px,2.6vw,25px);line-height:1.24;color:#eef0f5}
+.sec h4{margin:26px 0 8px;font-family:var(--disp);font-weight:600;font-size:15.6px;
+  letter-spacing:-.014em;color:#dfe3ec}
+.sec h5{margin:20px 0 6px;font:500 11px/1.4 var(--mono);letter-spacing:.13em;
+  text-transform:uppercase;color:#8b92a6}
+.sec p{margin:0 0 14px;color:#c3c9d6}
+.sec p strong{color:var(--fg);font-weight:600}
+.sec em{color:#d4d9e4;font-style:italic}
+.sec a{color:#4ade80;text-decoration:none;background-image:linear-gradient(var(--accent),var(--accent));
+  background-size:0 1px;background-repeat:no-repeat;background-position:0 100%;
+  transition:background-size .32s var(--ease-out),color var(--t)}
+.sec a:hover{color:#86efac;background-size:100% 1px}
+.sec code{font:400 13px/1.5 var(--mono);color:#b9bfd0;background:rgba(0,0,0,.34);
+  border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.sec ul,.sec ol{margin:0 0 16px;padding-left:0;list-style:none}
+.sec ul li{position:relative;padding:2.5px 0 2.5px 20px;color:#c3c9d6}
+.sec ul li::before{content:"";position:absolute;left:3px;top:14px;width:5px;height:1px;background:#5d6478}
+.sec ol{counter-reset:o}
+.sec ol li{position:relative;counter-increment:o;padding:2.5px 0 2.5px 26px;color:#c3c9d6}
+.sec ol li::before{content:counter(o);position:absolute;left:0;top:2.5px;
+  font:400 11.5px/1.9 var(--mono);color:#636b80}
+.sec ul ul,.sec ol ul{margin:4px 0 0}
+
+/* ============================================================
+   COMPONENTES DE CONTEÚDO
+   ============================================================ */
+/* Bloco de destaque / citação */
+.pull{position:relative;margin:22px 0;padding:18px 20px 18px 22px;border-radius:var(--r);
+  border:1px solid var(--line);border-left:2px solid var(--accent);
+  background:linear-gradient(100deg,var(--accent-08),rgba(255,255,255,.02) 46%,rgba(255,255,255,0));
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-1)}
+.pull p{margin:0;font-family:var(--disp);font-weight:500;font-size:16.5px;line-height:1.55;
+  letter-spacing:-.016em;color:#eef0f5}
+.pull p + p{margin-top:8px}
+
+/* Fluxo em passos (setas) */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:18px 0 20px}
+.flow__s{display:inline-flex;align-items:center;padding:6px 11px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(0,0,0,.28);
+  box-shadow:inset 0 1px 0 var(--lit);
+  font:500 12.4px/1 var(--sans);color:#d4d9e4;letter-spacing:-.008em;
+  transition:border-color var(--t),color var(--t),transform .22s var(--ease-out),background var(--t)}
+.flow__s:hover{border-color:var(--accent-28);color:#fff;transform:translateY(-2px);background:var(--accent-08)}
+.flow__a{color:#5d6478;flex:none;font-size:12px}
+.flow--v{position:relative;flex-direction:column;align-items:flex-start;gap:8px;
+  padding-left:22px;margin:20px 0 22px}
+.flow--v::before{content:"";position:absolute;left:5px;top:12px;bottom:12px;width:1px;
+  background:linear-gradient(180deg,var(--accent-28),var(--line))}
+.flow--v .flow__a{display:none}
+.flow--v .flow__s{position:relative}
+.flow--v .flow__s::before{content:"";position:absolute;left:-21px;top:50%;margin-top:-4px;
+  width:7px;height:7px;border-radius:50%;background:#1b1e2b;border:1px solid var(--accent-28);
+  transition:background var(--t),border-color var(--t)}
+.flow--v .flow__s:hover::before{background:var(--accent);border-color:var(--accent)}
+
+/* Cartão neutro / aviso */
+.note{position:relative;margin:20px 0;padding:16px 18px;border-radius:var(--r);
+  border:1px solid var(--line);background:rgba(26,29,39,.6);
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-1)}
+.note__k{display:flex;align-items:center;gap:8px;margin:0 0 8px;
+  font:500 10.5px/1.4 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:#8b92a6}
+.note__k::before{content:"";width:6px;height:6px;border-radius:50%;background:#8b92a6;flex:none}
+.note p:last-child,.note ul:last-child,.note ol:last-child{margin-bottom:0}
+.note--warn{border-color:rgba(234,179,8,.3);background:rgba(234,179,8,.05)}
+.note--warn .note__k{color:var(--warn)}
+.note--warn .note__k::before{background:var(--warn);box-shadow:0 0 0 3px rgba(234,179,8,.14)}
+.note--risk{border-color:rgba(239,68,68,.32);background:rgba(239,68,68,.05)}
+.note--risk .note__k{color:#f0736f}
+.note--risk .note__k::before{background:var(--neg);box-shadow:0 0 0 3px rgba(239,68,68,.14)}
+.note--rule{border-color:var(--accent-28);border-left:2px solid var(--accent);background:var(--accent-08)}
+.note--rule .note__k{color:#4ade80}
+.note--rule .note__k::before{background:var(--accent);box-shadow:0 0 0 3px var(--accent-14)}
+.note--ok{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}
+.note--ok .note__k{color:var(--pos)}
+.note--ok .note__k::before{background:var(--pos);box-shadow:0 0 0 3px rgba(34,197,94,.14)}
+
+/* Grade de listas em colunas */
+.cols{columns:2;column-gap:34px;margin:0 0 16px}
+.cols li{break-inside:avoid;padding-top:1px;padding-bottom:1px;line-height:1.58}
+.cols li::before{top:12px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+
+/* Cartão de pessoa */
+.who{position:relative;margin:24px 0;padding:0;border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;background:rgba(26,29,39,.5);
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-2);
+  transition:border-color var(--t),box-shadow .32s var(--ease)}
+.who:hover{border-color:var(--accent-28);box-shadow:inset 0 1px 0 var(--lit),var(--sh-3)}
+.who__top{display:flex;align-items:center;gap:14px;padding:16px 20px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0))}
+.who__av{width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;
+  font:500 15px/1 var(--mono);color:#fff;letter-spacing:-.02em;
+  background:linear-gradient(150deg,#215239,#16261f);border:1px solid var(--line);
+  box-shadow:inset 0 1px 0 var(--lit)}
+.who__id h4{margin:0;font-family:var(--disp);font-weight:600;font-size:17px;letter-spacing:-.02em;color:#f4f6fa}
+.who__id p{margin:2px 0 0;font:400 12.4px/1.4 var(--mono);color:#8b92a6}
+.who__body{padding:18px 20px}
+.who__body > :last-child{margin-bottom:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.tag{padding:3px 9px;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,.3);
+  font:400 11.6px/1.5 var(--sans);color:#a7adbe;
+  transition:border-color var(--t),color var(--t),background var(--t)}
+.tag:hover{border-color:var(--accent-28);color:var(--fg);background:var(--accent-08)}
+
+/* Tabelas */
+.tbl-wrap{margin:20px 0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-1)}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.4px;min-width:520px}
+thead th{position:sticky;top:0;text-align:left;padding:10px 14px;background:#1c1f2c;
+  font:500 10.5px/1.4 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:#8b92a6;
+  border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:10px 14px;border-bottom:1px solid rgba(46,51,72,.62);color:#c3c9d6;vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{transition:background var(--t)}
+tbody tr:hover{background:rgba(18,167,94,.07)}
+tbody td:first-child{color:var(--fg);font:400 12.8px/1.5 var(--mono)}
+
+/* Endpoint / código */
+.api{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0;padding:12px 14px;
+  border:1px solid var(--line);border-radius:var(--r);background:rgba(0,0,0,.36);
+  box-shadow:inset 0 1px 0 var(--lit)}
+.api__m{padding:3px 8px;border-radius:5px;font:500 11px/1.5 var(--mono);letter-spacing:.06em;
+  background:rgba(34,197,94,.14);color:var(--pos);border:1px solid rgba(34,197,94,.28)}
+.api__p{font:500 13.4px/1.5 var(--mono);color:#e8eaed;flex:1;min-width:0;word-break:break-all}
+.api__c{flex:none}
+
+/* Checklist com estado */
+.sec .check li{padding:0}
+.sec .check li::before{content:none}
+.check{list-style:none;margin:16px 0;padding:0;border:1px solid var(--line);
+  border-radius:var(--r);overflow:hidden;box-shadow:inset 0 1px 0 var(--lit),var(--sh-1)}
+.check li{border-bottom:1px solid rgba(46,51,72,.62)}
+.check li:last-child{border-bottom:0}
+.check label{display:flex;align-items:flex-start;gap:11px;padding:10px 14px;cursor:pointer;
+  transition:background var(--t)}
+.check label:hover{background:rgba(18,167,94,.07)}
+.check input{position:absolute;width:1px;height:1px;opacity:0;margin:0;pointer-events:none}
+.check__box{width:16px;height:16px;border-radius:5px;border:1px solid #3f4a44;flex:none;margin-top:4px;
+  background:rgba(0,0,0,.3);display:grid;place-items:center;
+  transition:background .22s var(--ease),border-color .22s var(--ease),transform .22s var(--ease-out)}
+.check__box svg{opacity:0;transform:scale(.5);transition:opacity .2s ease,transform .24s var(--ease-out)}
+.check input:checked + .check__box{background:var(--accent);border-color:#22c06f}
+.check input:checked + .check__box svg{opacity:1;transform:none}
+.check input:focus-visible + .check__box{outline:2px solid var(--accent-lt);outline-offset:2px}
+.check__t{font-size:13.6px;line-height:1.55;color:#c3c9d6;transition:color var(--t),opacity var(--t)}
+.check input:checked ~ .check__t{color:#7b8296;text-decoration:line-through;opacity:.75}
+.check__bar{display:flex;align-items:center;gap:12px;padding:11px 14px;background:#1c1f2c;
+  border-bottom:1px solid var(--line);font:400 12px/1 var(--mono);color:var(--fg2)}
+.check__track{flex:1;height:4px;border-radius:99px;background:rgba(0,0,0,.42);overflow:hidden}
+.check__fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-lt));
+  transition:width .42s var(--ease-out)}
+
+/* Rodapé */
+.foot{margin:86px 0 0;padding:28px 0 60px;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;justify-content:space-between}
+.foot p{margin:0;font-size:12.8px;line-height:1.7;color:#7b8296;max-width:52ch}
+.foot b{color:var(--fg2);font-weight:500}
+
+/* Voltar ao topo */
+.up{position:fixed;right:22px;bottom:22px;z-index:50;width:40px;height:40px;border-radius:50%;
+  display:grid;place-items:center;border:1px solid var(--line);color:var(--fg2);
+  background:rgba(26,29,39,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:inset 0 1px 0 var(--lit),var(--sh-2);cursor:pointer;
+  opacity:0;transform:translateY(12px) scale(.9);pointer-events:none;
+  transition:opacity .3s var(--ease),transform .34s var(--ease-out),border-color var(--t),color var(--t)}
+.up.is-on{opacity:1;transform:none;pointer-events:auto}
+.up:hover{border-color:var(--accent-28);color:var(--fg)}
+
+/* ============================================================
+   REVEAL
+   ============================================================ */
+.rv{opacity:0;transform:translateY(16px);
+  transition:opacity .62s var(--ease-out),transform .62s var(--ease-out);
+  transition-delay:var(--d,0ms)}
+.rv.is-in{opacity:1;transform:none}
+.mask{display:block;overflow:hidden}
+.mask > span{display:block;transform:translateY(102%);
+  transition:transform .82s var(--ease-out);transition-delay:var(--d,0ms)}
+.is-loaded .mask > span{transform:none}
+.fade-up{opacity:0;transform:translateY(14px);
+  transition:opacity .7s var(--ease-out),transform .7s var(--ease-out);transition-delay:var(--d,0ms)}
+.is-loaded .fade-up{opacity:1;transform:none}
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+@media (max-width:1180px){
+  :root{--toc-w:0px}
+  .shell{grid-template-columns:var(--nav-w) minmax(0,1fr)}
+  .toc{display:none}
+}
+@media (max-width:940px){
+  :root{--nav-w:0px}
+  .shell{grid-template-columns:minmax(0,1fr);padding:0 18px}
+  .nav{position:fixed;top:0;left:0;bottom:0;width:290px;z-index:70;margin:0;
+    padding:calc(var(--head-h) + 16px) 18px 0;background:#141721;border-right:1px solid var(--line);
+    box-shadow:var(--sh-3);height:100dvh;
+    transform:translateX(-102%);transition:transform .4s var(--ease-out);visibility:hidden}
+  .nav.is-open{transform:none;visibility:visible}
+  .burger{display:inline-flex}
+  .scrim{position:fixed;inset:0;z-index:65;background:rgba(8,9,13,.66);
+    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:opacity .34s var(--ease)}
+  .scrim.is-on{opacity:1;pointer-events:auto}
+  .figs{grid-template-columns:repeat(2,1fr)}
+  .figs__i:nth-child(2){border-right:0}
+  .figs__i:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .figs__i:nth-child(odd){padding-left:0}
+  .figs__i:nth-child(even){padding-left:18px}
+  .tracks,.grid3{grid-template-columns:1fr}
+  .cols{columns:1}
+}
+@media (max-width:760px){
+  .top__name-x,.top__sep,.top__crumb,.btn__lbl{display:none}
+  #printBtn{padding:8px;width:34px;justify-content:center}
+}
+@media (max-width:700px){
+  body{font-size:15.4px}
+  .hero{padding:44px 0 12px}
+  .pipe__svg{display:none}
+  .pipe__vert{display:block}
+  .grid2{grid-template-columns:1fr}
+  .figs{grid-template-columns:1fr}
+  .figs__i{border-right:0;border-bottom:1px solid var(--line);padding-left:0!important}
+  .figs__i:last-child{border-bottom:0}
+  .up{right:14px;bottom:14px}
+  .top{padding:0 14px}
+}
+
+/* ============================================================
+   MOVIMENTO REDUZIDO + IMPRESSÃO
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+  .rv,.fade-up{opacity:1;transform:none}
+  .mask > span{transform:none}
+  .cur,.cur-dot{display:none}
+}
+@media print{
+  :root{--head-h:0px}
+  body{background:#fff;color:#111}
+  .tex,.nav,.toc,.top,.up,.progress,.cur,.cur-dot,.scrim,.hero__cta,.pipe__foot{display:none!important}
+  .shell{display:block;max-width:none;padding:0}
+  .main{padding-top:0}
+  .rv,.fade-up{opacity:1!important;transform:none!important}
+  .mask > span{transform:none!important}
+  .sec,.part{break-inside:avoid-page}
+  .part{break-before:page}
+  .sec p,.sec li,.sec h3,.sec h4{color:#111}
+  .pull,.note,.who,.tbl-wrap,.pipe{border-color:#ccc;background:#fafafa;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="tex tex--mesh"></div>
+<div class="tex tex--dots"></div>
+<div class="tex tex--grain"></div>
+<div class="cur" aria-hidden="true"></div>
+<div class="cur-dot" aria-hidden="true"></div>
+<div class="progress"><div class="progress__bar" id="pbar"></div></div>
+
+<header class="top" id="top">
+  <button class="btn btn--icon burger" id="burger" aria-label="Abrir índice" aria-expanded="false" aria-controls="nav">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h11M2 7.5h11M2 11h11"/></svg>
+  </button>
+  <a class="top__mark" href="#top">
+    <span class="top__glyph">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h3l2.5-6 2.5 6h3"/></svg>
+    </span>
+    <span class="top__name">Playbook<span class="top__name-x"> · CRM &amp; Engajamento</span></span>
+  </a>
+  <span class="top__sep" aria-hidden="true">/</span>
+  <span class="top__crumb" id="crumb">Introdução</span>
+  <span class="top__sp"></span>
+  <div class="top__acts">
+    <button class="btn" id="printBtn">
+      <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6V2h7v4M4 11H2.5v-5h10v5H11M4 9h7v4H4z"/></svg>
+      <span class="btn__lbl">Imprimir</span>
+    </button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+
+  <!-- ══════════ ÍNDICE ══════════ -->
+  <nav class="nav" id="nav" aria-label="Índice do playbook">
+    <div class="nav__search">
+      <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="4.2"/><path d="M9.7 9.7 13 13" stroke-linecap="round"/></svg>
+      <input type="search" id="navq" placeholder="Buscar no índice…" aria-label="Buscar seção" autocomplete="off" spellcheck="false" />
+    </div>
+    <div class="nav__scroll" id="navScroll">
+      <p class="nav__empty" id="navEmpty">Nenhuma seção encontrada.</p>
+
+      <div class="nav__group" data-g="0">
+        <p class="nav__title"><b>I</b> Fundamentos</p>
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#s1"><span class="nav__n">01</span> Para que este documento existe</a></li>
+          <li><a class="nav__link" href="#s2"><span class="nav__n">02</span> O que é Engajamento</a></li>
+          <li><a class="nav__link" href="#s3"><span class="nav__n">03</span> O papel no ecossistema de CRM</a></li>
+          <li><a class="nav__link" href="#s4"><span class="nav__n">04</span> As frentes que a área apoia</a></li>
+          <li><a class="nav__link" href="#s5"><span class="nav__n">05</span> Quando Engajamento entra</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__group" data-g="1">
+        <p class="nav__title"><b>II</b> Time e operação</p>
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#s6"><span class="nav__n">06</span> Estrutura do núcleo</a></li>
+          <li><a class="nav__link" href="#s7"><span class="nav__n">07</span> Como a área trabalha</a></li>
+          <li><a class="nav__link" href="#s8"><span class="nav__n">08</span> Ritos</a></li>
+          <li><a class="nav__link" href="#s9"><span class="nav__n">09</span> Calendário único de comunicação</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__group" data-g="2">
+        <p class="nav__title"><b>III</b> CleverTap</p>
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#s10"><span class="nav__n">10</span> O que a nova gestão precisa entender</a></li>
+          <li><a class="nav__link" href="#s11"><span class="nav__n">11</span> O papel da Mesa na implantação</a></li>
+          <li><a class="nav__link" href="#s12"><span class="nav__n">12</span> Conceitos essenciais</a></li>
+          <li><a class="nav__link" href="#s13"><span class="nav__n">13</span> Propriedades construídas</a></li>
+          <li><a class="nav__link" href="#s14"><span class="nav__n">14</span> RFV</a></li>
+          <li><a class="nav__link" href="#s15"><span class="nav__n">15</span> Events</a></li>
+          <li><a class="nav__link" href="#s16"><span class="nav__n">16</span> Find People</a></li>
+          <li><a class="nav__link" href="#s17"><span class="nav__n">17</span> Segmentação</a></li>
+          <li><a class="nav__link" href="#s18"><span class="nav__n">18</span> Push Notification</a></li>
+          <li><a class="nav__link" href="#s19"><span class="nav__n">19</span> In-App</a></li>
+          <li><a class="nav__link" href="#s20"><span class="nav__n">20</span> Journeys</a></li>
+          <li><a class="nav__link" href="#s21"><span class="nav__n">21</span> Analytics</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__group" data-g="3">
+        <p class="nav__title"><b>IV</b> Dados, APIs e governança</p>
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#s22"><span class="nav__n">22</span> Arquitetura Data Lake → CleverTap</a></li>
+          <li><a class="nav__link" href="#s23"><span class="nav__n">23</span> API de atualização de Profile</a></li>
+          <li><a class="nav__link" href="#s24"><span class="nav__n">24</span> Por que isso foi importante</a></li>
+          <li><a class="nav__link" href="#s25"><span class="nav__n">25</span> Governança de propriedades</a></li>
+          <li><a class="nav__link" href="#s26"><span class="nav__n">26</span> Regra de qualidade</a></li>
+          <li><a class="nav__link" href="#s27"><span class="nav__n">27</span> API de criação de campanhas</a></li>
+          <li><a class="nav__link" href="#s28"><span class="nav__n">28</span> Endpoint de campanhas</a></li>
+          <li><a class="nav__link" href="#s29"><span class="nav__n">29</span> API de cupons</a></li>
+          <li><a class="nav__link" href="#s30"><span class="nav__n">30</span> Regra para qualquer automação</a></li>
+          <li><a class="nav__link" href="#s31"><span class="nav__n">31</span> Ponto técnico a corrigir</a></li>
+          <li><a class="nav__link" href="#s32"><span class="nav__n">32</span> Ponto de segurança crítico</a></li>
+          <li><a class="nav__link" href="#s33"><span class="nav__n">33</span> Papel de Dados</a></li>
+          <li><a class="nav__link" href="#s34"><span class="nav__n">34</span> Papel de Produto/Tecnologia</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__group" data-g="4">
+        <p class="nav__title"><b>V</b> Frentes de negócio</p>
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#s35"><span class="nav__n">35</span> Frente Local</a></li>
+          <li><a class="nav__link" href="#s36"><span class="nav__n">36</span> Cupons</a></li>
+          <li><a class="nav__link" href="#s37"><span class="nav__n">37</span> Raia Drogasil</a></li>
+          <li><a class="nav__link" href="#s38"><span class="nav__n">38</span> Ultragaz</a></li>
+          <li><a class="nav__link" href="#s39"><span class="nav__n">39</span> Cash-out</a></li>
+          <li><a class="nav__link" href="#s40"><span class="nav__n">40</span> Central de Faturas</a></li>
+          <li><a class="nav__link" href="#s41"><span class="nav__n">41</span> Mini apps</a></li>
+          <li><a class="nav__link" href="#s42"><span class="nav__n">42</span> TV de TODOS</a></li>
+          <li><a class="nav__link" href="#s43"><span class="nav__n">43</span> Figurinhas / Copa de TODOS</a></li>
+          <li><a class="nav__link" href="#s44"><span class="nav__n">44</span> Cross-selling</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__group" data-g="5">
+        <p class="nav__title"><b>VI</b> CX e relacionamento</p>
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#s45"><span class="nav__n">45</span> CX</a></li>
+          <li><a class="nav__link" href="#s46"><span class="nav__n">46</span> VoC e Birdie</a></li>
+          <li><a class="nav__link" href="#s47"><span class="nav__n">47</span> Retenção e churn</a></li>
+          <li><a class="nav__link" href="#s48"><span class="nav__n">48</span> Adimplência</a></li>
+          <li><a class="nav__link" href="#s49"><span class="nav__n">49</span> Onboarding e ongoing</a></li>
+          <li><a class="nav__link" href="#s50"><span class="nav__n">50</span> Micromomentos</a></li>
+          <li><a class="nav__link" href="#s51"><span class="nav__n">51</span> Filosofia de copy</a></li>
+          <li><a class="nav__link" href="#s52"><span class="nav__n">52</span> Personalização</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__group" data-g="6">
+        <p class="nav__title"><b>VII</b> Medição, riscos e transição</p>
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#s53"><span class="nav__n">53</span> Como medir</a></li>
+          <li><a class="nav__link" href="#s54"><span class="nav__n">54</span> Método de análise</a></li>
+          <li><a class="nav__link" href="#s55"><span class="nav__n">55</span> O ativo mais importante da Mesa</a></li>
+          <li><a class="nav__link" href="#s56"><span class="nav__n">56</span> Riscos para a transição</a></li>
+          <li><a class="nav__link" href="#s57"><span class="nav__n">57</span> Handoff técnico obrigatório</a></li>
+          <li><a class="nav__link" href="#s58"><span class="nav__n">58</span> Documentação de propriedades</a></li>
+          <li><a class="nav__link" href="#s59"><span class="nav__n">59</span> Checklist de nova campanha</a></li>
+          <li><a class="nav__link" href="#s60"><span class="nav__n">60</span> Checklist de nova integração</a></li>
+          <li><a class="nav__link" href="#s61"><span class="nav__n">61</span> Glossário técnico</a></li>
+          <li><a class="nav__link" href="#s62"><span class="nav__n">62</span> O que preservar</a></li>
+          <li><a class="nav__link" href="#s63"><span class="nav__n">63</span> Síntese final</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════ CONTEÚDO ══════════ -->
+  <main class="main" id="main">
+
+    <!-- ─────────── HERO ─────────── -->
+    <section class="hero" aria-labelledby="h1">
+      <div class="hero__glow" aria-hidden="true"></div>
+
+      <p class="eyebrow fade-up" style="--d:60ms"><i></i> Documento de passagem de gestão</p>
+
+      <h1 id="h1">
+        <span class="mask"><span style="--d:140ms">Playbook de Gestão</span></span>
+        <span class="mask"><span class="dim" style="--d:230ms">CRM &amp; Engajamento</span></span>
+      </h1>
+
+      <p class="hero__sub fade-up" style="--d:340ms">
+        Manual de operação, tecnologia, pessoas, governança e continuidade.
+        <strong>Cartão de TODOS · Agosto de 2026.</strong>
+      </p>
+
+      <dl class="hero__meta fade-up" style="--d:420ms">
+        <div><dt>Área</dt><dd>CRM &amp; Engajamento</dd></div>
+        <div><dt>Organização</dt><dd>Cartão de TODOS</dd></div>
+        <div><dt>Emissão</dt><dd>Agosto de 2026</dd></div>
+        <div><dt>Extensão</dt><dd>63 seções · <span data-total-time>—</span></dd></div>
+      </dl>
+
+      <div class="hero__cta fade-up" style="--d:490ms">
+        <a class="btn btn--pri" href="#s1">Começar pela introdução <span class="btn__ar">→</span></a>
+        <a class="btn" href="#acoes">Ações de transição <span class="btn__ar">→</span></a>
+        <a class="btn" href="#s57">Handoff técnico <span class="btn__ar">→</span></a>
+      </div>
+
+      <!-- ── ASSINATURA: o ciclo que a área construiu ── -->
+      <figure class="pipe fade-up" style="--d:560ms" aria-labelledby="pipecap">
+        <figcaption class="pipe__cap" id="pipecap">
+          <b>O ciclo</b>
+          <span>É isso que a Mesa construiu — e o que precisa continuar girando.</span>
+        </figcaption>
+
+        <svg class="pipe__svg" viewBox="0 0 720 134" role="img"
+             aria-label="Ciclo: Data Lake, Identity, Profile, Properties, Segmento, Jornada e retorno por comportamento, novo evento e nova decisão.">
+          <defs>
+            <linearGradient id="pgrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#0b7a45" stop-opacity=".2"/>
+              <stop offset="45%" stop-color="#22c55e"/>
+              <stop offset="100%" stop-color="#86efac" stop-opacity=".6"/>
+            </linearGradient>
+            <filter id="pglow" x="-260%" y="-260%" width="620%" height="620%">
+              <feGaussianBlur stdDeviation="3.4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- trilho + fluxo -->
+          <path id="loop" class="track"
+                d="M 28 39 L 692 39 C 706 39 712 48 712 62 C 712 90 700 118 666 118 L 54 118 C 20 118 8 90 8 62 C 8 48 14 39 28 39 Z"/>
+          <path id="loopFlow" class="flow"
+                d="M 28 39 L 692 39 C 706 39 712 48 712 62 C 712 90 700 118 666 118 L 54 118 C 20 118 8 90 8 62 C 8 48 14 39 28 39 Z"/>
+
+          <!-- seta de retorno -->
+          <path d="M 214 118 l 7 -4 v 8 z" fill="#5d6478"/>
+          <text class="lbl" x="360" y="108" text-anchor="middle">comportamento → novo evento → nova decisão</text>
+
+          <!-- pulso -->
+          <circle id="pulseH" class="pulse-h" r="7" cx="28" cy="39" filter="url(#pglow)"/>
+          <circle id="pulse" class="pulse" r="2.6" cx="28" cy="39"/>
+
+          <!-- nós -->
+          <g class="node node-lit" data-n="0"><rect class="node-box" x="28"  y="22" width="94" height="34" rx="9"/><text class="node-t" x="75"  y="43.5" text-anchor="middle">Data Lake</text><text class="lbl" x="75" y="70" text-anchor="middle">Athena</text></g>
+          <g class="node" data-n="1"><rect class="node-box" x="142" y="22" width="94" height="34" rx="9"/><text class="node-t" x="189" y="43.5" text-anchor="middle">Identity</text></g>
+          <g class="node" data-n="2"><rect class="node-box" x="256" y="22" width="94" height="34" rx="9"/><text class="node-t" x="303" y="43.5" text-anchor="middle">Profile</text></g>
+          <g class="node" data-n="3"><rect class="node-box" x="370" y="22" width="94" height="34" rx="9"/><text class="node-t" x="417" y="43.5" text-anchor="middle">Properties</text></g>
+          <g class="node" data-n="4"><rect class="node-box" x="484" y="22" width="94" height="34" rx="9"/><text class="node-t" x="531" y="43.5" text-anchor="middle">Segmento</text></g>
+          <g class="node" data-n="5"><rect class="node-box" x="598" y="22" width="94" height="34" rx="9"/><text class="node-t" x="645" y="43.5" text-anchor="middle">Jornada</text><text class="lbl" x="645" y="70" text-anchor="middle">Push · In-App</text></g>
+        </svg>
+
+        <ol class="pipe__vert">
+          <li>Data Lake <span style="color:#707890">· Athena</span></li>
+          <li>Identity</li>
+          <li>Profile</li>
+          <li>Properties</li>
+          <li>Segmento</li>
+          <li>Jornada <span style="color:#707890">· Push · In-App</span></li>
+          <li>comportamento → novo evento → nova decisão</li>
+        </ol>
+
+        <p class="pipe__foot">
+          Detalhamento em <a href="#s10">§10</a> (fluxo conceitual), <a href="#s22">§22</a> (arquitetura)
+          e <a href="#s23">§23</a> (<code>POST /1/upload</code>).
+        </p>
+      </figure>
+
+      <!-- ── FIGURAS DO DOCUMENTO ── -->
+      <div class="figs rv">
+        <div class="figs__i">
+          <p class="figs__n" data-count="2000" data-suffix="+">2.000+</p>
+          <p class="figs__l">campanhas na CleverTap</p>
+          <a class="figs__s sec__n" href="#s11">§11</a>
+        </div>
+        <div class="figs__i">
+          <p class="figs__n" data-count="6" data-suffix=" mi">6 mi</p>
+          <p class="figs__l">cliques registrados</p>
+          <a class="figs__s sec__n" href="#s11">§11</a>
+        </div>
+        <div class="figs__i">
+          <p class="figs__n" data-count="20" data-suffix="%">20%</p>
+          <p class="figs__l">CTR médio de In-App em campanha de RD</p>
+          <a class="figs__s sec__n" href="#s19">§19</a>
+        </div>
+        <div class="figs__i">
+          <p class="figs__n" data-count="761">761</p>
+          <p class="figs__l">cadastros no piloto de TV de TODOS</p>
+          <a class="figs__s sec__n" href="#s42">§42</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────── TRILHAS DE LEITURA ─────────── -->
+    <section class="sec rv" id="trilhas" aria-labelledby="trilhas-h">
+      <div class="sec__h">
+        <h3 id="trilhas-h">Três formas de ler este documento</h3>
+      </div>
+      <p>Escolha o caminho conforme o que você precisa resolver primeiro.</p>
+      <div class="tracks">
+        <a class="track" href="#s1">
+          <span class="track__k">Nova gestão</span>
+          <p class="track__h">Do zero ao contexto</p>
+          <p class="track__d">Por que a área existe, o que ela faz, quem são as pessoas e como o trabalho é organizado.</p>
+          <span class="track__go">§1 → §9 <span>→</span></span>
+        </a>
+        <a class="track" href="#s10">
+          <span class="track__k">Técnico</span>
+          <p class="track__h">Plataforma e integrações</p>
+          <p class="track__d">CleverTap, propriedades, RFV, arquitetura com o Data Lake, APIs de Profile e de campanhas.</p>
+          <span class="track__go">§10 → §34 <span>→</span></span>
+        </a>
+        <a class="track" href="#s56">
+          <span class="track__k">Transição</span>
+          <p class="track__h">Riscos e o que exigir</p>
+          <p class="track__d">Conhecimento concentrado, correção pendente, segurança de credenciais e o inventário obrigatório.</p>
+          <span class="track__go">§56 → §60 <span>→</span></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ─────────── AÇÕES DE TRANSIÇÃO (consolidado) ─────────── -->
+    <section class="sec rv" id="acoes" aria-labelledby="acoes-h">
+      <div class="sec__h">
+        <h3 id="acoes-h">Ações de transição, consolidadas</h3>
+      </div>
+      <p>Os pontos deste documento que exigem decisão ou correção antes da troca definitiva de gestão. Cada item aponta para a seção que o descreve por extenso.</p>
+
+      <div class="note note--risk">
+        <p class="note__k">Crítico · segurança</p>
+        <p>Credenciais técnicas escritas diretamente no código. Rotacionar, remover dos arquivos e migrar para variáveis de ambiente ou secret manager. <a href="#s32">Ver §32 →</a></p>
+      </div>
+
+      <div class="note note--warn">
+        <p class="note__k">Correção pendente · dado</p>
+        <p>No script de carga de saldo, <code>data_ultimo_cashout</code> recebe o valor de <code>data_ultimo_cashin</code>. Validar e corrigir antes da passagem. <a href="#s31">Ver §31 →</a></p>
+      </div>
+
+      <div class="note note--warn">
+        <p class="note__k">Risco · conhecimento concentrado</p>
+        <p>CleverTap, APIs, integrações, properties e scripts concentrados em poucas pessoas. Mitigar com documentação e shadowing. <a href="#s56">Ver §56 →</a></p>
+      </div>
+
+      <div class="note note--rule">
+        <p class="note__k">Obrigatório · inventário</p>
+        <p>Inventário de CleverTap, APIs, Data Lake, RFV e Cupons antes da troca definitiva. O checklist operacional está em <a href="#s57">§57</a>, com estado salvo neste navegador.</p>
+      </div>
+    </section>
+
+    <!-- ══════════════ PARTE I ══════════════ -->
+    <section class="part rv" data-part id="p1" aria-labelledby="p1h">
+      <div class="part__glow" aria-hidden="true"></div>
+      <div class="part__rule"><span class="part__n">PARTE I</span><span class="part__line"></span><span class="part__time" data-time></span></div>
+      <h2 id="p1h">Fundamentos</h2>
+      <p class="part__d">Por que a área existe, o que ela efetivamente faz e onde ela se encaixa no ecossistema de CRM.</p>
+    </section>
+
+    <section class="sec rv" id="s1">
+      <div class="sec__h"><a class="sec__n" href="#s1">§1</a><h3>Para que este documento existe</h3></div>
+      <p>Este documento é o manual de passagem da área de <strong>CRM &amp; Engajamento do Cartão de TODOS</strong>.</p>
+      <p>Ele foi estruturado para permitir que uma nova gestão entenda, sem depender de contexto anterior:</p>
+      <ul class="cols">
+        <li>por que a área existe;</li>
+        <li>o que ela efetivamente faz;</li>
+        <li>o que é responsabilidade direta do time;</li>
+        <li>onde Engajamento atua como apoio para outras áreas;</li>
+        <li>quem são as pessoas-chave;</li>
+        <li>como o trabalho é organizado;</li>
+        <li>como funciona a CleverTap;</li>
+        <li>como CleverTap, Data Lake e APIs se conectam;</li>
+        <li>quais propriedades de clientes foram construídas;</li>
+        <li>como segmentações e jornadas são criadas;</li>
+        <li>como campanhas são operadas;</li>
+        <li>quais são os principais produtos e parceiros;</li>
+        <li>como resultados são acompanhados;</li>
+        <li>quais conhecimentos estão concentrados;</li>
+        <li>quais riscos precisam ser tratados na transição.</li>
+      </ul>
+      <div class="pull">
+        <p>Este não é somente um inventário de campanhas.</p>
+        <p>É um manual da <strong>máquina de engajamento construída nos últimos dois anos</strong>.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s2">
+      <div class="sec__h"><a class="sec__n" href="#s2">§2</a><h3>O que é Engajamento</h3></div>
+      <p>A Mesa de Engajamento nasceu com a missão de construir uma operação capaz de transformar a enorme base do Cartão de TODOS em uma base:</p>
+      <ul class="cols">
+        <li>ativa;</li><li>recorrente;</li><li>utilizadora;</li>
+        <li>conectada ao aplicativo;</li><li>consciente dos benefícios;</li>
+        <li>mais valiosa ao longo do relacionamento.</li>
+      </ul>
+      <p>A primeira evolução importante foi sair da lógica de:</p>
+      <div class="pull"><p>“temos alguma coisa para comunicar”</p></div>
+      <p>para:</p>
+      <div class="pull"><p>“existe um comportamento que queremos gerar”.</p></div>
+      <p>Por isso, Engajamento não deve ser entendido como um time de disparo.</p>
+      <p>A área transforma:</p>
+      <div class="flow">
+        <span class="flow__s">objetivo de negócio</span><span class="flow__a">+</span>
+        <span class="flow__s">comportamento</span><span class="flow__a">+</span>
+        <span class="flow__s">dado</span><span class="flow__a">+</span>
+        <span class="flow__s">segmentação</span><span class="flow__a">+</span>
+        <span class="flow__s">contexto</span><span class="flow__a">+</span>
+        <span class="flow__s">comunicação</span><span class="flow__a">+</span>
+        <span class="flow__s">tecnologia</span>
+      </div>
+      <p>em ação.</p>
+      <p>Na prática, o trabalho termina quando conseguimos responder:</p>
+      <div class="pull"><p>quem foi impactado, o que essa pessoa fez depois e o que devemos fazer diferente na próxima interação?</p></div>
+    </section>
+
+    <section class="sec rv" id="s3">
+      <div class="sec__h"><a class="sec__n" href="#s3">§3</a><h3>O papel de Engajamento dentro do ecossistema de CRM</h3></div>
+      <p>É importante separar três camadas.</p>
+
+      <h4>3.1 CRM estrutural</h4>
+      <p>É o bastidor da operação.</p>
+      <p>Inclui:</p>
+      <ul class="cols">
+        <li>HubSpot;</li><li>leads;</li><li>pipelines;</li><li>governança;</li>
+        <li>qualidade cadastral;</li><li>listas;</li><li>bases;</li><li>regras;</li>
+        <li>integrações;</li><li>cobertura de canais.</li>
+      </ul>
+
+      <h4>3.2 Engajamento</h4>
+      <p>É a camada que transforma esses dados em comportamento.</p>
+      <p>Inclui:</p>
+      <ul class="cols">
+        <li>CleverTap;</li><li>Push;</li><li>In-App;</li><li>campanhas;</li><li>jornadas;</li>
+        <li>personalização;</li><li>segmentação comportamental;</li><li>app;</li><li>cashback;</li>
+        <li>parceiros;</li><li>Local;</li><li>cupons;</li><li>cash-out;</li><li>micromomentos;</li>
+        <li>campanhas especiais;</li><li>automações;</li><li>APIs;</li><li>leitura de resultado.</li>
+      </ul>
+
+      <h4>3.3 CX</h4>
+      <p>Mostra onde a experiência está funcionando ou quebrando.</p>
+      <p>Inclui temas como:</p>
+      <ul class="cols">
+        <li>VoC;</li><li>Birdie;</li><li>NPS;</li><li>pesquisas;</li><li>retenção;</li>
+        <li>churn;</li><li>adimplência;</li><li>atendimento;</li><li>desfiliação.</li>
+      </ul>
+
+      <h5>Como as três se conectam</h5>
+      <p>A lógica correta é:</p>
+      <div class="flow">
+        <span class="flow__s">CX identifica uma dor ou oportunidade</span><span class="flow__a">→</span>
+        <span class="flow__s">Dados identifica o público</span><span class="flow__a">→</span>
+        <span class="flow__s">Engajamento cria a jornada</span><span class="flow__a">→</span>
+        <span class="flow__s">CRM executa</span><span class="flow__a">→</span>
+        <span class="flow__s">comportamento é medido</span><span class="flow__a">→</span>
+        <span class="flow__s">aprendizado volta para CX e negócio</span>
+      </div>
+      <p>Essa conexão é uma das principais características da operação construída.</p>
+    </section>
+
+    <section class="sec rv" id="s4">
+      <div class="sec__h"><a class="sec__n" href="#s4">§4</a><h3>Um ponto importante para a nova gestão: Engajamento apoia muito mais frentes do que as que formalmente possui</h3></div>
+      <p>Existem frentes das quais Engajamento é diretamente responsável.</p>
+      <p>E existem frentes de outras áreas em que a Mesa funciona como <strong>braço estratégico e operacional de CRM</strong>.</p>
+      <p>É importante preservar essa diferença.</p>
+
+      <div class="grid2">
+        <div class="note note--ok">
+          <p class="note__k">Frentes diretamente ligadas ao núcleo</p>
+          <ul>
+            <li>Parceiros Locais;</li><li>Cupons;</li><li>Cashback/App;</li><li>Cash-out;</li>
+            <li>RD;</li><li>Ultragaz;</li><li>CleverTap;</li><li>In-App;</li>
+            <li>propriedades e enriquecimento de dados;</li><li>APIs;</li>
+            <li>Central de Faturas;</li><li>mini apps;</li><li>micromomentos;</li>
+            <li>campanhas especiais;</li><li>TV de TODOS;</li>
+            <li>relatórios e performance das frentes.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Frentes em que Engajamento atua como apoio</p>
+          <ul>
+            <li>cross-selling;</li><li>UDNs;</li><li>CX;</li><li>VoC;</li><li>Birdie;</li>
+            <li>pesquisas;</li><li>retenção;</li><li>churn;</li><li>adimplência;</li>
+            <li>desfiliação;</li><li>onboarding;</li><li>ongoing;</li>
+            <li>campanhas nacionais;</li><li>TIM;</li><li>saúde;</li>
+            <li>projetos que dependam de CRM;</li>
+            <li>iniciativas que precisem transformar base em comportamento.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>A área não precisa ser dona do KPI dessas frentes para ter papel crítico na execução.</p>
+      <p>O papel de Engajamento costuma ser:</p>
+      <div class="flow">
+        <span class="flow__s">briefing</span><span class="flow__a">→</span>
+        <span class="flow__s">público</span><span class="flow__a">→</span>
+        <span class="flow__s">dado</span><span class="flow__a">→</span>
+        <span class="flow__s">segmentação</span><span class="flow__a">→</span>
+        <span class="flow__s">mensagem</span><span class="flow__a">→</span>
+        <span class="flow__s">canal</span><span class="flow__a">→</span>
+        <span class="flow__s">jornada</span><span class="flow__a">→</span>
+        <span class="flow__s">disparo</span><span class="flow__a">→</span>
+        <span class="flow__s">mensuração</span><span class="flow__a">→</span>
+        <span class="flow__s">otimização</span>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s5">
+      <div class="sec__h"><a class="sec__n" href="#s5">§5</a><h3>Como saber se Engajamento precisa entrar em um projeto</h3></div>
+      <p>A regra mais simples é:</p>
+      <div class="note note--rule">
+        <p class="note__k">Regra</p>
+        <p>se existe uma ação que queremos que o filiado faça, Engajamento provavelmente precisa participar.</p>
+      </div>
+      <p>Exemplos:</p>
+      <ul class="cols">
+        <li>usar um benefício;</li><li>acessar o app;</li><li>usar saldo;</li>
+        <li>resgatar cupom;</li><li>comprar;</li><li>agendar;</li><li>pagar;</li>
+        <li>responder pesquisa;</li><li>conhecer uma UDN;</li><li>demonstrar interesse;</li>
+        <li>indicar;</li><li>regularizar;</li><li>continuar no Cartão;</li>
+        <li>retornar a uma jornada abandonada.</li>
+      </ul>
+      <p>Se a demanda é puramente institucional ou aquisição sem nenhuma jornada posterior, a participação pode ser menor.</p>
+      <p>Se existe comportamento, Engajamento deve entrar.</p>
+    </section>
+
+    <!-- ══════════════ PARTE II ══════════════ -->
+    <section class="part rv" data-part id="p2" aria-labelledby="p2h">
+      <div class="part__glow" aria-hidden="true"></div>
+      <div class="part__rule"><span class="part__n">PARTE II</span><span class="part__line"></span><span class="part__time" data-time></span></div>
+      <h2 id="p2h">Time e operação</h2>
+      <p class="part__d">Quem são as pessoas-chave, como cada uma funciona melhor, em que velocidades a Mesa trabalha e quais ritos sustentam a rotina.</p>
+    </section>
+
+    <section class="sec rv" id="s6">
+      <div class="sec__h"><a class="sec__n" href="#s6">§6</a><h3>Estrutura do núcleo</h3></div>
+
+      <article class="who">
+        <div class="who__top">
+          <span class="who__av" aria-hidden="true">VO</span>
+          <div class="who__id"><h4>Victor Oliveira</h4><p>Local · Cupons · CleverTap</p></div>
+        </div>
+        <div class="who__body">
+          <h5>Papel</h5>
+          <p>Principal referência técnica e estratégica da frente <strong>Local, Cupons e CleverTap</strong>.</p>
+          <p>Veio da Insider e possui repertório relevante de plataformas de engagement.</p>
+
+          <h5>Principais frentes</h5>
+          <div class="tags">
+            <span class="tag">Parceiros Locais</span><span class="tag">Cupons</span><span class="tag">CleverTap</span>
+            <span class="tag">novas features da CleverTap</span><span class="tag">Central de Faturas</span>
+            <span class="tag">mini app Mais Saúde</span><span class="tag">demais mini apps</span>
+            <span class="tag">projetos de app</span><span class="tag">temas de integração</span>
+            <span class="tag">projetos especiais de maior complexidade</span>
+            <span class="tag">interface com Avelino</span><span class="tag">interface com Mais TODOS</span>
+            <span class="tag">interface com CleverTap</span>
+          </div>
+
+          <h5>Perfil</h5>
+          <p>Victor é:</p>
+          <ul class="cols">
+            <li>muito inteligente;</li><li>eloquente;</li><li>curioso;</li>
+            <li>tecnicamente forte;</li><li>interessado;</li><li>bom em conectar assuntos;</li>
+            <li>confortável com complexidade;</li><li>interessado em projetos grandes.</li>
+          </ul>
+          <p>Não deve ser usado somente como executor de campanha.</p>
+          <p>Seu maior valor aparece quando existe um problema amplo envolvendo:</p>
+          <div class="flow">
+            <span class="flow__s">negócio</span><span class="flow__a">+</span>
+            <span class="flow__s">CRM</span><span class="flow__a">+</span>
+            <span class="flow__s">produto</span><span class="flow__a">+</span>
+            <span class="flow__s">dado</span><span class="flow__a">+</span>
+            <span class="flow__s">tecnologia</span>
+          </div>
+
+          <div class="note note--warn">
+            <p class="note__k">Atenção de gestão</p>
+            <p>Hoje existe concentração relevante de conhecimento de CleverTap nele.</p>
+            <p>A nova gestão precisa transformar esse conhecimento em ativo coletivo.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="who">
+        <div class="who__top">
+          <span class="who__av" aria-hidden="true">MI</span>
+          <div class="who__id"><h4>Michel</h4><p>Design · criatividade · gestão de projetos</p></div>
+        </div>
+        <div class="who__body">
+          <h5>Papel</h5>
+          <p>Coordenador de Design que evoluiu para uma atuação muito mais ampla.</p>
+          <p>Na prática, Michel funciona como:</p>
+          <div class="flow">
+            <span class="flow__s">criatividade</span><span class="flow__a">+</span>
+            <span class="flow__s">negócio</span><span class="flow__a">+</span>
+            <span class="flow__s">planejamento</span><span class="flow__a">+</span>
+            <span class="flow__s">gestão de projetos</span>
+          </div>
+
+          <h5>Frentes</h5>
+          <div class="tags">
+            <span class="tag">criatividade da Mesa</span><span class="tag">coordenação de peças</span>
+            <span class="tag">organização de campanhas</span><span class="tag">apoio a Local</span>
+            <span class="tag">micromomentos</span><span class="tag">campanhas especiais</span>
+            <span class="tag">grandes projetos</span><span class="tag">interface com Branding</span>
+            <span class="tag">construção de narrativas</span><span class="tag">oportunidades criativas</span>
+            <span class="tag">gestão de projetos</span>
+          </div>
+
+          <h5>Perfil</h5>
+          <p>É um perfil proativo.</p>
+          <p>Não precisa necessariamente ser acionado para começar a criar.</p>
+          <p>Traz:</p>
+          <ul class="cols">
+            <li>pautas;</li><li>ideias;</li><li>referências;</li>
+            <li>oportunidades;</li><li>leitura de negócio.</li>
+          </ul>
+          <p>Tem forte preocupação com resultado e não somente com estética.</p>
+          <p>Demonstrou capacidade importante de gestão no projeto de Figurinhas/Copa de TODOS.</p>
+
+          <div class="note note--rule">
+            <p class="note__k">Gestão recomendada</p>
+            <p>Não reduzir sua função a “fazer peças”.</p>
+            <p>Envolver desde a construção da campanha.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="who">
+        <div class="who__top">
+          <span class="who__av" aria-hidden="true">YA</span>
+          <div class="who__id"><h4>Yasmin</h4><p>RD · Ultragaz · Cash-out · relatórios</p></div>
+        </div>
+        <div class="who__body">
+          <h5>Responsabilidades</h5>
+          <ul>
+            <li>Raia Drogasil;</li><li>Ultragaz;</li><li>Cash-out;</li><li>relatórios;</li>
+            <li>acompanhamento dos planejamentos dessas frentes;</li>
+            <li>organização de campanhas.</li>
+          </ul>
+
+          <h5>Perfil</h5>
+          <p>É uma executora planejadora.</p>
+          <p>Possui boa previsibilidade quando:</p>
+          <ul>
+            <li>responsabilidade está clara;</li>
+            <li>prazo está combinado;</li>
+            <li>entregável está definido.</li>
+          </ul>
+          <p>Cumpre os acordos e demonstra interesse.</p>
+          <p>Seu desenvolvimento principal está em ampliar proatividade e capacidade de trazer novas hipóteses sem depender de acionamento.</p>
+
+          <div class="note note--rule">
+            <p class="note__k">Gestão recomendada</p>
+            <p>Além de pedir resultado, perguntar sempre:</p>
+            <p><strong>“o que você recomenda fazer a partir disso?”</strong></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="who">
+        <div class="who__top">
+          <span class="who__av" aria-hidden="true">FE</span>
+          <div class="who__id"><h4>Felipe</h4><p>Dados · segmentação · automações</p></div>
+        </div>
+        <div class="who__body">
+          <h5>Papel</h5>
+          <p>Principal apoio analítico e técnico da Mesa.</p>
+
+          <h5>Responsabilidades</h5>
+          <ul class="cols">
+            <li>extração de bases;</li><li>criação de segmentações;</li><li>análise;</li>
+            <li>apuração de resultados;</li><li>Data Lake;</li><li>suporte às APIs;</li>
+            <li>automações;</li><li>apoio a Local e Cupons;</li>
+            <li>desenvolvimento de soluções técnicas.</li>
+          </ul>
+          <p>Foi responsável por desenvolver, entre outras coisas, a automação de criação massiva de campanhas de cupons.</p>
+
+          <h5>Perfil</h5>
+          <p>É:</p>
+          <ul class="cols">
+            <li>muito bom tecnicamente;</li><li>rápido;</li><li>interessado;</li>
+            <li>excelente para dados;</li><li>capaz de construir soluções.</li>
+          </ul>
+          <p>Funciona melhor quando recebe um problema do qual seja efetivamente dono.</p>
+          <p>Precisa de estímulo e acompanhamento para evitar uma postura exclusivamente reativa.</p>
+        </div>
+      </article>
+
+      <article class="who">
+        <div class="who__top">
+          <span class="who__av" aria-hidden="true">JM</span>
+          <div class="who__id"><h4>João Miossi</h4><p>TV de TODOS · apoio a Local</p></div>
+        </div>
+        <div class="who__body">
+          <h5>Responsabilidades</h5>
+          <ul>
+            <li>TV de TODOS;</li>
+            <li>apoio à operação de Local.</li>
+          </ul>
+
+          <div class="note note--warn">
+            <p class="note__k">Ponto de gestão</p>
+            <p>É atualmente o principal ponto de atenção de capacidade operacional.</p>
+            <p>Existem dificuldades recorrentes em:</p>
+            <ul>
+              <li>multitarefa;</li><li>prazo;</li><li>horário;</li>
+              <li>organização;</li><li>previsibilidade.</li>
+            </ul>
+            <p>Não é recomendável colocar várias frentes críticas simultaneamente sob sua responsabilidade sem acompanhamento próximo.</p>
+          </div>
+
+          <h5>Modelo recomendado</h5>
+          <ul>
+            <li>poucas prioridades simultâneas;</li><li>prazo explícito;</li>
+            <li>checkpoint;</li><li>entregável pequeno;</li>
+            <li>definição objetiva de pronto.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="sec rv" id="s7">
+      <div class="sec__h"><a class="sec__n" href="#s7">§7</a><h3>Como a área trabalha</h3></div>
+      <p>O modelo não é:</p>
+      <div class="flow">
+        <span class="flow__s">briefing</span><span class="flow__a">→</span>
+        <span class="flow__s">campanha</span><span class="flow__a">→</span>
+        <span class="flow__s">fim</span>
+      </div>
+      <p>O modelo é:</p>
+      <div class="flow">
+        <span class="flow__s">hipótese</span><span class="flow__a">→</span>
+        <span class="flow__s">execução</span><span class="flow__a">→</span>
+        <span class="flow__s">comportamento</span><span class="flow__a">→</span>
+        <span class="flow__s">aprendizado</span><span class="flow__a">→</span>
+        <span class="flow__s">nova hipótese</span>
+      </div>
+      <p>Por isso a área trabalha em três velocidades.</p>
+      <div class="grid3">
+        <div class="note">
+          <p class="note__k">Planejamento</p>
+          <p>Calendário de campanhas, parceiros, datas comerciais, UDNs e projetos.</p>
+        </div>
+        <div class="note">
+          <p class="note__k">Operação</p>
+          <p>Execução das campanhas planejadas.</p>
+        </div>
+        <div class="note">
+          <p class="note__k">Oportunidade</p>
+          <p>Micromomentos que surgem durante a semana e precisam ser aproveitados rapidamente.</p>
+        </div>
+      </div>
+      <p>A qualidade da Mesa depende de conseguir operar as três ao mesmo tempo.</p>
+    </section>
+
+    <section class="sec rv" id="s8">
+      <div class="sec__h"><a class="sec__n" href="#s8">§8</a><h3>Ritos</h3></div>
+
+      <h4>Diário</h4>
+      <p>Acompanhamento das frentes com maior impacto.</p>
+      <p>Perguntas:</p>
+      <ul class="cols">
+        <li>o número mudou?</li><li>por quê?</li><li>alguma campanha acelerou?</li>
+        <li>alguma caiu?</li><li>existe oportunidade hoje?</li><li>alguma base está saturada?</li>
+        <li>precisamos aumentar ou reduzir pressão?</li><li>surgiu algum micromomento?</li>
+        <li>algum parceiro precisa de reforço?</li>
+      </ul>
+
+      <h4>Semanal</h4>
+      <h5>Weekly com Mais TODOS</h5>
+      <p>Rito recorrente de performance envolvendo:</p>
+      <ul class="cols">
+        <li>resultados;</li><li>Local;</li><li>parceiros;</li><li>cash-in;</li>
+        <li>cash-out;</li><li>campanhas;</li><li>oportunidades;</li>
+        <li>problemas;</li><li>próximos passos.</li>
+      </ul>
+      <h5>Ritos por projeto</h5>
+      <p>Grandes projetos podem ter weekly própria.</p>
+
+      <h4>Agendas-chave</h4>
+      <div class="grid2">
+        <div class="note"><p class="note__k">Michel</p><p>Branding.</p></div>
+        <div class="note">
+          <p class="note__k">Victor</p>
+          <ul><li>Avelino;</li><li>Mais TODOS;</li><li>CleverTap;</li><li>interlocutores técnicos.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s9">
+      <div class="sec__h"><a class="sec__n" href="#s9">§9</a><h3>Calendário único de comunicação</h3></div>
+      <p>O calendário consolidado precisa continuar sendo a fonte única de verdade da operação.</p>
+      <p>Referência:</p>
+      <div class="api">
+        <span class="api__m" style="background:rgba(255,255,255,.06);color:#a7adbe;border-color:var(--line)">LINK</span>
+        <a class="api__p" href="https://cdtengajamentocx.github.io/calendariocomunicacoes/" target="_blank" rel="noopener noreferrer">https://cdtengajamentocx.github.io/calendariocomunicacoes/</a>
+      </div>
+      <p>Ele permite consolidar:</p>
+      <ul class="cols">
+        <li>Engajamento;</li><li>CX;</li><li>canal;</li><li>campanha;</li>
+        <li>responsável;</li><li>data;</li><li>status;</li><li>público;</li><li>andamento.</li>
+      </ul>
+      <p>O objetivo não é apenas organização.</p>
+      <p>É evitar:</p>
+      <ul class="cols">
+        <li>sobreposição;</li><li>excesso de frequência;</li><li>conflito entre áreas;</li>
+        <li>impacto repetido no mesmo público;</li><li>disputa por Push;</li>
+        <li>perda de visibilidade da liderança.</li>
+      </ul>
+      <div class="note note--rule">
+        <p class="note__k">Regra</p>
+        <p>Se a comunicação vai chegar ao filiado, ela precisa estar visível na governança.</p>
+      </div>
+    </section>
+
+    <!-- ══════════════ PARTE III ══════════════ -->
+    <section class="part rv" data-part id="p3" aria-labelledby="p3h">
+      <div class="part__glow" aria-hidden="true"></div>
+      <div class="part__rule"><span class="part__n">PARTE III</span><span class="part__line"></span><span class="part__time" data-time></span></div>
+      <h2 id="p3h">CleverTap</h2>
+      <p class="part__d">A camada de ativação sobre os dados e comportamentos do filiado: conceitos, propriedades, segmentação, canais e leitura.</p>
+    </section>
+
+    <section class="sec rv" id="s10">
+      <div class="sec__h"><a class="sec__n" href="#s10">§10</a><h3>CleverTap: o que uma nova gestão precisa entender</h3></div>
+      <p>A CleverTap é uma das principais infraestruturas da Mesa.</p>
+      <p>Seria incorreto tratá-la apenas como ferramenta para “subir push”.</p>
+      <p>Ela funciona como uma camada de ativação em cima dos dados e comportamentos do filiado.</p>
+
+      <h4>Fluxo conceitual</h4>
+      <div class="flow flow--v">
+        <span class="flow__s">Data Lake + App + eventos</span><span class="flow__a">↓</span>
+        <span class="flow__s">perfil do usuário</span><span class="flow__a">↓</span>
+        <span class="flow__s">propriedades</span><span class="flow__a">↓</span>
+        <span class="flow__s">comportamento</span><span class="flow__a">↓</span>
+        <span class="flow__s">segmentação</span><span class="flow__a">↓</span>
+        <span class="flow__s">Push / In-App / Journey</span><span class="flow__a">↓</span>
+        <span class="flow__s">ação do filiado</span><span class="flow__a">↓</span>
+        <span class="flow__s">novo evento</span><span class="flow__a">↓</span>
+        <span class="flow__s">nova decisão</span>
+      </div>
+      <p>Essa arquitetura foi construída e evoluída pela própria área.</p>
+    </section>
+
+    <section class="sec rv" id="s11">
+      <div class="sec__h"><a class="sec__n" href="#s11">§11</a><h3>O papel que a Mesa teve na implantação da CleverTap</h3></div>
+      <p>A Mesa não recebeu uma CleverTap pronta.</p>
+      <p>Ao longo do projeto, o time participou da construção de:</p>
+      <ul class="cols">
+        <li>modelo de utilização;</li><li>governança;</li><li>campanhas;</li><li>propriedades;</li>
+        <li>integração com dados;</li><li>regras de segmentação;</li><li>eventos;</li>
+        <li>jornadas;</li><li>APIs;</li><li>automação;</li><li>uso de saldo real;</li>
+        <li>RFV;</li><li>personalização;</li><li>inteligência de performance.</li>
+      </ul>
+      <p>Em 2025, os materiais estratégicos já registravam:</p>
+      <ul>
+        <li>mais de 2 mil campanhas na CleverTap;</li>
+        <li>mais de 6 milhões de cliques;</li>
+        <li>criação da RFV do grupo pela Mesa;</li>
+        <li>enriquecimento de perfis com propriedades do Data Lake via API.</li>
+      </ul>
+      <p>Ou seja:</p>
+      <div class="pull"><p>uma parte relevante da inteligência que hoje existe dentro da CleverTap foi construída dentro de Engajamento.</p></div>
+    </section>
+
+    <section class="sec rv" id="s12">
+      <div class="sec__h"><a class="sec__n" href="#s12">§12</a><h3>Os cinco conceitos essenciais da CleverTap</h3></div>
+
+      <h4>12.1 Identity</h4>
+      <p>É a chave que permite reconhecer um filiado.</p>
+      <p>O dado vindo do Lake precisa ser associado ao usuário correto.</p>
+      <p>No processo atual, o <code>app_id_usuario</code> é tratado e transformado em um formato de <code>identity</code> utilizado no perfil da CleverTap.</p>
+      <div class="note note--warn">
+        <p class="note__k">Sem Identity consistente</p>
+        <ul>
+          <li>o dado pode não encontrar o usuário;</li>
+          <li>propriedades não atualizam;</li>
+          <li>segmentação quebra;</li>
+          <li>personalização deixa de funcionar.</li>
+        </ul>
+      </div>
+
+      <h4>12.2 Profile</h4>
+      <p>Cada usuário possui um perfil.</p>
+      <p>O perfil reúne informações conhecidas sobre aquela pessoa.</p>
+      <p>Pode conter:</p>
+      <ul>
+        <li>dados cadastrais;</li><li>propriedades de negócio;</li>
+        <li>status;</li><li>informações de comportamento.</li>
+      </ul>
+
+      <h4>12.3 Properties</h4>
+      <p>São características associadas ao perfil.</p>
+      <p>Essa é uma das maiores construções realizadas pela Mesa.</p>
+      <p>A CleverTap não conhece naturalmente o negócio do Cartão de TODOS.</p>
+      <p>Para permitir CRM inteligente, foi necessário levar para dentro dela informações do Data Lake.</p>
+    </section>
+
+    <section class="sec rv" id="s13">
+      <div class="sec__h"><a class="sec__n" href="#s13">§13</a><h3>Propriedades construídas ou operacionalizadas pela Mesa</h3></div>
+      <p>Entre as propriedades trabalhadas pela área estão:</p>
+
+      <div class="grid2">
+        <div class="note">
+          <p class="note__k">Financeiras</p>
+          <ul>
+            <li>saldo disponível;</li><li>saldo/cashin;</li><li>última data de cash-in;</li>
+            <li>última data de cash-out;</li><li>comportamento de utilização.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Relacionamento</p>
+          <ul>
+            <li>data de filiação;</li><li>status de adimplência;</li>
+            <li>situação contratual;</li><li>estágio da jornada.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Localização</p>
+          <ul>
+            <li>UF;</li><li>cidade;</li><li>franquia;</li>
+            <li>informações utilizadas para regionalização e Local.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Comportamento</p>
+          <ul>
+            <li>RFV;</li><li>recência;</li><li>frequência;</li><li>valor;</li>
+            <li>atividade;</li><li>histórico de uso;</li><li>relação com parceiros.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h5>Segmentação</h5>
+      <ul class="cols">
+        <li>gênero quando aplicável;</li><li>plano;</li><li>públicos específicos;</li>
+        <li>categorias;</li><li>elegibilidades.</li>
+      </ul>
+
+      <p>O script de carga atual, por exemplo, extrai do histórico de cashback campos como saldo autorizado, última data de cash-in, última data de cash-out, adimplência, UF e data de filiação antes de construir a atualização do perfil.</p>
+
+      <div class="note note--rule">
+        <p class="note__k">Importante</p>
+        <p><strong>Saldo, última data de cash-in, adimplência, localização e lógica de RFV não apareceram “prontos” dentro da CleverTap.</strong></p>
+        <p>Foram necessidades identificadas pelo time de Engajamento para permitir segmentação mais inteligente e levadas para a plataforma por meio de integração e APIs.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s14">
+      <div class="sec__h"><a class="sec__n" href="#s14">§14</a><h3>RFV</h3></div>
+      <p>RFV significa:</p>
+      <div class="pull"><p>Recência + Frequência + Valor.</p></div>
+      <p>Foi criado para permitir que a comunicação deixe de tratar toda a base da mesma maneira.</p>
+      <p>Exemplos conceituais:</p>
+      <div class="grid3">
+        <div class="note"><p class="note__k">Recência</p><p>Quanto tempo faz desde a última utilização.</p></div>
+        <div class="note"><p class="note__k">Frequência</p><p>Quantas vezes o filiado utiliza o ecossistema.</p></div>
+        <div class="note"><p class="note__k">Valor</p><p>Quanto valor ele movimenta.</p></div>
+      </div>
+      <p>A partir disso, conseguimos separar comportamentos diferentes e criar comunicação adequada a cada grupo.</p>
+      <div class="note note--warn">
+        <p class="note__k">Atenção para a nova gestão</p>
+        <p>Os <strong>limites numéricos vigentes de cada cluster</strong> devem estar formalmente registrados junto à consulta/job responsável pela classificação.</p>
+        <p>Não redefinir RFV diretamente na CleverTap sem alinhar com a lógica utilizada no Lake.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s15">
+      <div class="sec__h"><a class="sec__n" href="#s15">§15</a><h3>Events</h3></div>
+      <p>Property responde:</p>
+      <div class="pull"><p>quem a pessoa é ou em que condição ela está.</p></div>
+      <p>Event responde:</p>
+      <div class="pull"><p>o que ela fez.</p></div>
+      <p>Exemplos:</p>
+      <ul class="cols">
+        <li>abriu o app;</li><li>recebeu Push;</li><li>visualizou Push;</li>
+        <li>clicou na notificação;</li><li>entrou em determinada tela;</li>
+        <li>visualizou produto;</li><li>concluiu compra;</li><li>acessou benefício;</li>
+        <li>utilizou cupom;</li><li>iniciou jornada;</li><li>concluiu jornada.</li>
+      </ul>
+      <p>Isso permite combinar:</p>
+      <div class="pull"><p>perfil + comportamento.</p></div>
+      <p>Exemplo:</p>
+      <div class="note note--rule">
+        <p class="note__k">Exemplo de combinação</p>
+        <p>filiados de determinada cidade + saldo maior que zero + não fizeram cash-out + abriram o app nos últimos 30 dias.</p>
+      </div>
+      <p>Esse é o tipo de capacidade que diferencia CRM comportamental de uma base estática.</p>
+    </section>
+
+    <section class="sec rv" id="s16">
+      <div class="sec__h"><a class="sec__n" href="#s16">§16</a><h3>Find People</h3></div>
+      <p>É uma das áreas mais úteis para Dados e CRM dentro da CleverTap.</p>
+      <p>Serve para:</p>
+      <ul class="cols">
+        <li>localizar perfil;</li><li>verificar Identity;</li><li>conferir propriedades;</li>
+        <li>verificar eventos;</li><li>validar se uma carga entrou;</li>
+        <li>entender por que alguém entrou ou não em um segmento.</li>
+      </ul>
+      <p>Quando existe dúvida sobre uma API, a primeira validação deve ser:</p>
+      <div class="flow">
+        <span class="flow__s">Lake</span><span class="flow__a">→</span>
+        <span class="flow__s">usuário</span><span class="flow__a">→</span>
+        <span class="flow__s">Profile</span><span class="flow__a">→</span>
+        <span class="flow__s">Property</span>
+      </div>
+      <p>Depois:</p>
+      <div class="flow">
+        <span class="flow__s">Profile</span><span class="flow__a">→</span>
+        <span class="flow__s">Segment</span><span class="flow__a">→</span>
+        <span class="flow__s">Campaign</span>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s17">
+      <div class="sec__h"><a class="sec__n" href="#s17">§17</a><h3>Segmentação</h3></div>
+      <p>O modelo de segmentação da Mesa passou a combinar três grupos de informação.</p>
+      <div class="grid3">
+        <div class="note">
+          <p class="note__k">Quem é</p>
+          <ul><li>cidade;</li><li>franquia;</li><li>plano;</li><li>status;</li><li>adimplência.</li></ul>
+        </div>
+        <div class="note">
+          <p class="note__k">O que tem</p>
+          <ul><li>saldo;</li><li>benefício;</li><li>elegibilidade;</li><li>cupom.</li></ul>
+        </div>
+        <div class="note">
+          <p class="note__k">O que fez</p>
+          <ul><li>abriu;</li><li>clicou;</li><li>comprou;</li><li>utilizou;</li><li>marcou;</li><li>não converteu;</li><li>parou de usar.</li></ul>
+        </div>
+      </div>
+      <p>É essa combinação que deve orientar as campanhas.</p>
+    </section>
+
+    <section class="sec rv" id="s18">
+      <div class="sec__h"><a class="sec__n" href="#s18">§18</a><h3>Push Notification</h3></div>
+      <p>Push é o principal canal de escala dentro da CleverTap.</p>
+      <p>Serve especialmente para:</p>
+      <ul class="cols">
+        <li>urgência;</li><li>rotina;</li><li>retorno ao app;</li><li>campanhas comerciais;</li>
+        <li>micromomentos;</li><li>reativação;</li><li>sazonalidade.</li>
+      </ul>
+      <p>Um Push pode conter:</p>
+      <ul class="cols">
+        <li>título;</li><li>descrição;</li><li>deeplink;</li><li>imagem quando aplicável;</li>
+        <li>CTA;</li><li>personalização;</li><li>segmentação;</li><li>horário;</li>
+        <li>regra de frequência.</li>
+      </ul>
+    </section>
+
+    <section class="sec rv" id="s19">
+      <div class="sec__h"><a class="sec__n" href="#s19">§19</a><h3>In-App</h3></div>
+      <p>In-App é a comunicação exibida <strong>depois que o usuário já entrou no aplicativo</strong>.</p>
+      <p>Não deve ser tratado como “mais um Push”.</p>
+      <p>Seu papel é diferente.</p>
+      <p>O desenho interno da Mesa considera que o In-App:</p>
+      <ul>
+        <li>não consome a mesma cota de frequência de Push;</li>
+        <li>pode impactar quem entrou no aplicativo e não respondeu a Push;</li>
+        <li>permite segmentações comportamentais mais específicas;</li>
+        <li>possui excelente potencial de fundo de funil.</li>
+      </ul>
+      <p>Na estratégia documentada em julho, eventos como <code>Notification Clicked</code>, <code>Push Impressions</code> e <code>Delivered</code>, combinados com sessão ativa, foram utilizados para identificar públicos que não responderam ao Push e poderiam receber In-App.</p>
+      <div class="note note--ok">
+        <p class="note__k">Resultado observado</p>
+        <p>Em algumas campanhas, In-App entregou CTR muito superior ao Push. Em RD, por exemplo, houve campanha com CTR médio próximo de 20% e conversão relevante após clique.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s20">
+      <div class="sec__h"><a class="sec__n" href="#s20">§20</a><h3>Journeys</h3></div>
+      <p>Journey é uma régua automatizada que reage ao comportamento.</p>
+      <p>Em vez de:</p>
+      <div class="note">
+        <p class="note__k">Régua fixa</p>
+        <p>D0 → mensagem<br />D3 → mensagem<br />D7 → mensagem</p>
+        <p>para todo mundo, podemos trabalhar:</p>
+      </div>
+      <div class="note note--rule">
+        <p class="note__k">Régua reativa</p>
+        <p>D0 → mensagem</p>
+        <p><strong>se abriu e converteu → sai</strong></p>
+        <p><strong>se abriu e não converteu → mensagem B</strong></p>
+        <p><strong>se nem abriu → mensagem C</strong></p>
+      </div>
+      <p>Esse é o modelo que deve continuar sendo desenvolvido.</p>
+      <p>Aplicações:</p>
+      <ul class="cols">
+        <li>onboarding;</li><li>abandono;</li><li>cash-out;</li><li>parceiros;</li>
+        <li>consulta;</li><li>campanhas de produto;</li><li>recuperação;</li>
+        <li>ativação;</li><li>mini apps.</li>
+      </ul>
+    </section>
+
+    <section class="sec rv" id="s21">
+      <div class="sec__h"><a class="sec__n" href="#s21">§21</a><h3>Analytics</h3></div>
+      <p>CleverTap também é fonte de leitura comportamental.</p>
+      <p>Principais leituras:</p>
+      <ul class="cols">
+        <li>envios;</li><li>impressões;</li><li>cliques;</li><li>CTR;</li>
+        <li>App Launched;</li><li>eventos;</li><li>conversão;</li><li>usuários;</li>
+        <li>DAU;</li><li>MAU;</li><li>comportamento por campanha;</li>
+        <li>comportamento por segmento;</li><li>evolução de eventos.</li>
+      </ul>
+      <div class="note note--rule">
+        <p class="note__k">Regra</p>
+        <p>CleverTap não deve ser usada só para “enviar”.</p>
+        <p>Quem opera precisa saber analisar.</p>
+      </div>
+    </section>
+
+    <!-- ══════════════ PARTE IV ══════════════ -->
+    <section class="part rv" data-part id="p4" aria-labelledby="p4h">
+      <div class="part__glow" aria-hidden="true"></div>
+      <div class="part__rule"><span class="part__n">PARTE IV</span><span class="part__line"></span><span class="part__time" data-time></span></div>
+      <h2 id="p4h">Dados, APIs e governança</h2>
+      <p class="part__d">A ponte que a Mesa construiu entre dados corporativos e comunicação — e as regras que a mantêm confiável.</p>
+    </section>
+
+    <section class="sec rv" id="s22">
+      <div class="sec__h"><a class="sec__n" href="#s22">§22</a><h3>Arquitetura Data Lake → CleverTap</h3></div>
+      <p>Uma das construções mais importantes da Mesa foi criar uma ponte entre dados corporativos e comunicação.</p>
+      <p>O fluxo utilizado no caso da carga de saldo é:</p>
+      <div class="flow flow--v">
+        <span class="flow__s">AWS Athena / Data Lake</span><span class="flow__a">↓</span>
+        <span class="flow__s">query</span><span class="flow__a">↓</span>
+        <span class="flow__s">DataFrame / tratamento</span><span class="flow__a">↓</span>
+        <span class="flow__s">Identity</span><span class="flow__a">↓</span>
+        <span class="flow__s">payload de Profile</span><span class="flow__a">↓</span>
+        <span class="flow__s">CleverTap Upload API</span><span class="flow__a">↓</span>
+        <span class="flow__s">Profile atualizado</span><span class="flow__a">↓</span>
+        <span class="flow__s">segmentação</span><span class="flow__a">↓</span>
+        <span class="flow__s">campanha</span>
+      </div>
+      <p>O documento técnico do processo descreve exatamente esse desenho: Athena → consulta → Pandas → normalização → montagem de perfil → envio em lotes → CleverTap.</p>
+    </section>
+
+    <section class="sec rv" id="s23">
+      <div class="sec__h"><a class="sec__n" href="#s23">§23</a><h3>API de atualização de Profile</h3></div>
+      <p>A atualização das propriedades ocorre pela API de upload.</p>
+      <h5>Endpoint utilizado</h5>
+      <div class="api">
+        <span class="api__m">POST</span>
+        <span class="api__p">/1/upload</span>
+        <button class="btn btn--icon api__c" data-copy="/1/upload" aria-label="Copiar endpoint">
+          <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="5" y="5" width="8" height="8" rx="1.6"/><path d="M10 5V3.6A1.6 1.6 0 0 0 8.4 2H3.6A1.6 1.6 0 0 0 2 3.6v4.8A1.6 1.6 0 0 0 3.6 10H5"/></svg>
+        </button>
+      </div>
+      <p>A carga atual monta registros do tipo:</p>
+      <ul>
+        <li><code>identity</code>;</li>
+        <li><code>type = profile</code>;</li>
+        <li><code>profileData</code>.</li>
+      </ul>
+      <p>No profileData são incluídas propriedades que depois ficam disponíveis para segmentação.</p>
+      <p>O fluxo atual envia os registros em lotes, com retry e controle de processados/não processados.</p>
+    </section>
+
+    <section class="sec rv" id="s24">
+      <div class="sec__h"><a class="sec__n" href="#s24">§24</a><h3>Por que isso foi importante</h3></div>
+      <p>Antes dessas integrações, uma parte importante da inteligência existia apenas no Data Lake.</p>
+      <div class="grid2">
+        <div class="note note--ok">
+          <p class="note__k">A CleverTap sabia</p>
+          <ul><li>abriu app;</li><li>recebeu comunicação;</li><li>clicou.</li></ul>
+        </div>
+        <div class="note note--warn">
+          <p class="note__k">Mas não necessariamente sabia</p>
+          <ul>
+            <li>qual o saldo real;</li><li>quando foi o último cash-in;</li>
+            <li>qual a situação de adimplência;</li>
+            <li>em qual cluster de RFV a pessoa estava;</li>
+            <li>de qual cidade/franquia era;</li>
+            <li>determinadas condições de negócio.</li>
+          </ul>
+        </div>
+      </div>
+      <p>A Mesa conectou essas duas camadas.</p>
+      <p>A partir disso, tornou-se possível fazer campanhas como:</p>
+      <div class="pull"><p>“usuários com saldo disponível + sem uso recente + de determinada região + com determinado comportamento.”</p></div>
+      <p>Isso representa uma mudança estrutural na capacidade de CRM.</p>
+    </section>
+
+    <section class="sec rv" id="s25">
+      <div class="sec__h"><a class="sec__n" href="#s25">§25</a><h3>Governança de propriedades</h3></div>
+      <p>Toda nova propriedade precisa ter:</p>
+      <ul class="cols">
+        <li>nome;</li><li>definição;</li><li>fonte;</li><li>tabela;</li><li>regra;</li>
+        <li>periodicidade;</li><li>formato;</li><li>owner;</li>
+        <li>data da última atualização;</li><li>uso em campanhas.</li>
+      </ul>
+      <h5>Exemplo</h5>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table>
+        <thead><tr><th>Propriedade</th><th>O que representa</th><th>Origem</th></tr></thead>
+        <tbody>
+          <tr><td>saldo</td><td>saldo disponível do filiado</td><td>Data Lake</td></tr>
+          <tr><td>dt_ultimo_cashin</td><td>última geração de saldo</td><td>Data Lake</td></tr>
+          <tr><td>data_ultimo_cashout</td><td>última utilização</td><td>Data Lake</td></tr>
+          <tr><td>adimplencia</td><td>situação financeira</td><td>Data Lake</td></tr>
+          <tr><td>cidade</td><td>localização do filiado/franquia</td><td>Data Lake</td></tr>
+          <tr><td>franquia</td><td>vínculo regional</td><td>Data Lake</td></tr>
+          <tr><td>RFV</td><td>cluster de comportamento</td><td>cálculo da Mesa/Dados</td></tr>
+          <tr><td>data_filiacao</td><td>início da relação</td><td>Data Lake</td></tr>
+        </tbody>
+      </table></div></div>
+    </section>
+
+    <section class="sec rv" id="s26">
+      <div class="sec__h"><a class="sec__n" href="#s26">§26</a><h3>Regra de qualidade para propriedades</h3></div>
+      <p>Antes de usar uma propriedade em campanha:</p>
+      <ol>
+        <li>validar fonte;</li>
+        <li>validar quantidade;</li>
+        <li>validar nulos;</li>
+        <li>carregar;</li>
+        <li>procurar usuários conhecidos no Find People;</li>
+        <li>comparar Lake x CleverTap;</li>
+        <li>construir segmento;</li>
+        <li>conferir estimativa;</li>
+        <li>só depois disparar.</li>
+      </ol>
+      <div class="note note--rule">
+        <p class="note__k">Regra</p>
+        <p>Nunca assumir que uma API executada significa dado correto.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s27">
+      <div class="sec__h"><a class="sec__n" href="#s27">§27</a><h3>API de criação de campanhas</h3></div>
+      <p>A segunda grande evolução foi não utilizar API apenas para carregar perfil.</p>
+      <p>Também passamos a criar campanhas automaticamente.</p>
+      <p>O arquivo de cupons mostra essa arquitetura.</p>
+      <p>A planilha contém campos como:</p>
+      <ul class="cols">
+        <li>franquia;</li><li>parceiro;</li><li>segmento;</li><li>subcategoria;</li>
+        <li>público;</li><li>link;</li><li>título;</li><li>texto;</li>
+        <li>CTA;</li><li>data;</li><li>horário.</li>
+      </ul>
+      <p>Essas linhas são transformadas automaticamente em campanhas da CleverTap.</p>
+    </section>
+
+    <section class="sec rv" id="s28">
+      <div class="sec__h"><a class="sec__n" href="#s28">§28</a><h3>Endpoint de campanhas</h3></div>
+      <p>O fluxo utiliza a criação de target/campanha pela API.</p>
+      <div class="api">
+        <span class="api__m">POST</span>
+        <span class="api__p">/1/targets/create.json</span>
+        <button class="btn btn--icon api__c" data-copy="/1/targets/create.json" aria-label="Copiar endpoint">
+          <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="5" y="5" width="8" height="8" rx="1.6"/><path d="M10 5V3.6A1.6 1.6 0 0 0 8.4 2H3.6A1.6 1.6 0 0 0 2 3.6v4.8A1.6 1.6 0 0 0 3.6 10H5"/></svg>
+        </button>
+      </div>
+      <p>O script monta:</p>
+      <ul class="cols">
+        <li>nome da campanha;</li><li>plataforma;</li><li>Android;</li><li>iOS;</li>
+        <li>deeplink;</li><li>CTA;</li><li>público;</li><li>franquia;</li>
+        <li>plano;</li><li>labels;</li><li>frequência;</li><li>título;</li>
+        <li>corpo;</li><li>horário;</li><li>timezone;</li><li>TTL.</li>
+      </ul>
+      <p>Isso permite transformar milhares de linhas em campanhas individualizadas sem criação manual uma a uma.</p>
+    </section>
+
+    <section class="sec rv" id="s29">
+      <div class="sec__h"><a class="sec__n" href="#s29">§29</a><h3>API de cupons: por que é um ativo importante</h3></div>
+      <p>Na frente de Cupons, a automação tornou possível fazer campanhas:</p>
+      <ul class="cols">
+        <li>por parceiro;</li><li>por franquia;</li><li>por público;</li>
+        <li>com copy própria;</li><li>com deeplink;</li>
+        <li>em data e horário próprios.</li>
+      </ul>
+      <p>O código possui inclusive etapas de:</p>
+      <div class="flow">
+        <span class="flow__s">diagnóstico</span><span class="flow__a">→</span>
+        <span class="flow__s">estimate</span><span class="flow__a">→</span>
+        <span class="flow__s">draft</span><span class="flow__a">→</span>
+        <span class="flow__s">publish</span>
+      </div>
+      <p>Além de:</p>
+      <ul class="cols">
+        <li>retry;</li><li>log;</li><li>tratamento de erro;</li><li>deduplicação;</li>
+        <li>validação de data;</li><li>validação de parceiro;</li>
+        <li>filtro de campanha passada.</li>
+      </ul>
+      <div class="note note--rule">
+        <p class="note__k">Ativo da área</p>
+        <p>Isso é um ativo da área.</p>
+        <p>Não deve desaparecer com a troca de gestão.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s30">
+      <div class="sec__h"><a class="sec__n" href="#s30">§30</a><h3>Regra para qualquer automação</h3></div>
+      <p>Automação não significa ausência de controle.</p>
+      <p>Toda automação precisa ter:</p>
+      <div class="flow">
+        <span class="flow__s">entrada</span><span class="flow__a">→</span>
+        <span class="flow__s">validação</span><span class="flow__a">→</span>
+        <span class="flow__s">estimate</span><span class="flow__a">→</span>
+        <span class="flow__s">QA</span><span class="flow__a">→</span>
+        <span class="flow__s">publicação</span><span class="flow__a">→</span>
+        <span class="flow__s">log</span><span class="flow__a">→</span>
+        <span class="flow__s">resultado</span>
+      </div>
+      <p>Especialmente quando milhares de campanhas podem ser criadas de uma única vez.</p>
+    </section>
+
+    <section class="sec rv" id="s31">
+      <div class="sec__h"><a class="sec__n" href="#s31">§31</a><h3>Ponto técnico que precisa ser corrigido</h3></div>
+      <p>Existe no script atual de carga de saldo um ponto que precisa ser revisado.</p>
+      <div class="note note--warn">
+        <p class="note__k">Correção pendente</p>
+        <p>Na montagem do perfil, <code>data_ultimo_cashout</code> está recebendo o valor de <code>data_ultimo_cashin</code>, apesar de a query extrair a data correta do cash-out.</p>
+        <p>Antes da passagem definitiva, validar e corrigir essa associação.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s32">
+      <div class="sec__h"><a class="sec__n" href="#s32">§32</a><h3>Ponto de segurança crítico</h3></div>
+      <div class="note note--risk">
+        <p class="note__k">Crítico</p>
+        <p>Os scripts atuais possuem credenciais técnicas escritas diretamente no código.</p>
+        <p>Isso não deve ser perpetuado.</p>
+        <p>A própria documentação técnica anterior já identificava esse risco e recomendava retirar credenciais AWS e CleverTap do código e utilizar variáveis de ambiente ou um cofre de segredos.</p>
+      </div>
+      <h5>Ação de transição</h5>
+      <ul>
+        <li>rotacionar credenciais expostas;</li>
+        <li>remover chaves dos arquivos;</li>
+        <li>retirar secrets de notebooks;</li>
+        <li>utilizar variáveis de ambiente;</li>
+        <li>utilizar um secret manager;</li>
+        <li>nunca inserir senhas neste playbook.</li>
+      </ul>
+    </section>
+
+    <section class="sec rv" id="s33">
+      <div class="sec__h"><a class="sec__n" href="#s33">§33</a><h3>Papel de Dados</h3></div>
+      <p>O melhor modelo não é:</p>
+      <div class="pull"><p>Engajamento pede base para Dados.</p></div>
+      <p>O modelo ideal é:</p>
+      <div class="pull"><p>Engajamento define necessidade de comportamento e Dados garante infraestrutura confiável para que ela exista.</p></div>
+      <div class="grid2">
+        <div class="note">
+          <p class="note__k">Dados precisa ajudar a garantir</p>
+          <ul>
+            <li>fonte;</li><li>atualização;</li><li>identidade;</li><li>qualidade;</li>
+            <li>consistência;</li><li>propriedade;</li><li>evento;</li><li>automação.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Engajamento transforma isso em</p>
+          <ul><li>segmento;</li><li>campanha;</li><li>jornada;</li><li>decisão.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s34">
+      <div class="sec__h"><a class="sec__n" href="#s34">§34</a><h3>Papel de Produto/Tecnologia</h3></div>
+      <p>Produto precisa envolver Engajamento antes de lançar funcionalidade.</p>
+      <p>Para toda nova feature, perguntar:</p>
+      <ul class="cols">
+        <li>existe evento de entrada?</li><li>existe evento de sucesso?</li>
+        <li>existe evento de erro?</li><li>existe deeplink?</li>
+        <li>sabemos quem concluiu?</li><li>sabemos quem abandonou?</li>
+        <li>conseguimos segmentar?</li><li>conseguimos reativar?</li>
+      </ul>
+      <p>Essa lógica deve ser usada nos mini apps e nas novas features.</p>
+    </section>
+
+    <!-- ══════════════ PARTE V ══════════════ -->
+    <section class="part rv" data-part id="p5" aria-labelledby="p5h">
+      <div class="part__glow" aria-hidden="true"></div>
+      <div class="part__rule"><span class="part__n">PARTE V</span><span class="part__line"></span><span class="part__time" data-time></span></div>
+      <h2 id="p5h">Frentes de negócio</h2>
+      <p class="part__d">Onde o benefício encontra a rotina do filiado: parceiros, cupons, saldo, mini apps e os projetos que serviram de laboratório.</p>
+    </section>
+
+    <section class="sec rv" id="s35">
+      <div class="sec__h"><a class="sec__n" href="#s35">§35</a><h3>Frente Local</h3></div>
+      <p>Local conecta o benefício do Cartão à vida cotidiana.</p>
+      <p>Principais categorias trabalhadas:</p>
+      <div class="tags">
+        <span class="tag">alimentação</span><span class="tag">ótica</span><span class="tag">mercado</span>
+        <span class="tag">combustível</span><span class="tag">academia</span><span class="tag">farmácia</span>
+        <span class="tag">manipulação</span><span class="tag">demais parceiros</span>
+      </div>
+      <p>O trabalho inclui:</p>
+      <ul class="cols">
+        <li>campanha;</li><li>segmentação;</li><li>geolocalização;</li><li>contexto;</li>
+        <li>parceiro;</li><li>promoção;</li><li>pagamento pelo app;</li><li>análise.</li>
+      </ul>
+      <p>O princípio é:</p>
+      <div class="pull"><p>cashback só vira hábito quando cabe na rotina.</p></div>
+    </section>
+
+    <section class="sec rv" id="s36">
+      <div class="sec__h"><a class="sec__n" href="#s36">§36</a><h3>Cupons</h3></div>
+      <p>Cupons não devem ser vistos simplesmente como desconto.</p>
+      <p>São uma ferramenta de:</p>
+      <ul class="cols">
+        <li>primeira utilização;</li><li>hábito;</li><li>progressão;</li>
+        <li>recorrência;</li><li>visita ao parceiro;</li><li>abertura de app.</li>
+      </ul>
+      <p>A frente já começou a testar progressão:</p>
+      <div class="flow">
+        <span class="flow__s">R$ 2</span><span class="flow__a">→</span>
+        <span class="flow__s">R$ 5</span><span class="flow__a">→</span>
+        <span class="flow__s">R$ 8</span><span class="flow__a">→</span>
+        <span class="flow__s">R$ 18</span>
+      </div>
+      <div class="note note--rule">
+        <p class="note__k">Aprendizado central</p>
+        <p>o primeiro uso é a maior barreira.</p>
+        <p>Depois que o cliente entra no ciclo, os próximos incentivos podem performar muito acima da base fria.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s37">
+      <div class="sec__h"><a class="sec__n" href="#s37">§37</a><h3>Raia Drogasil</h3></div>
+      <p>Frente de alto impacto e grande escala.</p>
+      <p>O planejamento precisa trabalhar:</p>
+      <ul class="cols">
+        <li>compra;</li><li>recompra;</li><li>cash-out;</li><li>sazonalidade;</li>
+        <li>categoria;</li><li>contexto;</li><li>comportamento.</li>
+      </ul>
+      <p>A comunicação performa melhor quando conecta ocasião e necessidade, e não apenas “tem cashback”.</p>
+    </section>
+
+    <section class="sec rv" id="s38">
+      <div class="sec__h"><a class="sec__n" href="#s38">§38</a><h3>Ultragaz</h3></div>
+      <p>Frente com comportamento mais concentrado e alta sensibilidade a timing.</p>
+      <p>Promoções fortes podem antecipar compra.</p>
+      <p>Por isso, analisar:</p>
+      <div class="pull"><p><strong>janela total</strong>, e não somente o dia promocional.</p></div>
+    </section>
+
+    <section class="sec rv" id="s39">
+      <div class="sec__h"><a class="sec__n" href="#s39">§39</a><h3>Cash-out</h3></div>
+      <p>A jornada do benefício não termina quando o cliente ganha saldo.</p>
+      <p>É:</p>
+      <div class="flow">
+        <span class="flow__s">gerar</span><span class="flow__a">→</span>
+        <span class="flow__s">perceber</span><span class="flow__a">→</span>
+        <span class="flow__s">utilizar</span><span class="flow__a">→</span>
+        <span class="flow__s">voltar a gerar</span>
+      </div>
+      <p>Cash-out deve trabalhar o saldo de forma concreta.</p>
+      <p>Quando possível:</p>
+      <div class="pull"><p>“você tem R$ X para usar”</p></div>
+      <p>é muito mais poderoso do que uma comunicação abstrata de cashback.</p>
+    </section>
+
+    <section class="sec rv" id="s40">
+      <div class="sec__h"><a class="sec__n" href="#s40">§40</a><h3>Central de Faturas</h3></div>
+      <p>Frente estrutural que conecta:</p>
+      <ul>
+        <li>Engajamento;</li><li>CX;</li><li>adimplência;</li><li>facilidade de pagamento.</li>
+      </ul>
+      <p>Deve ser utilizada como destino das jornadas sempre que fizer sentido.</p>
+    </section>
+
+    <section class="sec rv" id="s41">
+      <div class="sec__h"><a class="sec__n" href="#s41">§41</a><h3>Mini apps</h3></div>
+      <p>Victor acompanha a frente técnica.</p>
+      <p>Inclui:</p>
+      <ul>
+        <li>Mais Saúde;</li><li>novas funcionalidades;</li><li>experiências futuras.</li>
+      </ul>
+      <p>Todo mini app precisa nascer com:</p>
+      <ul class="cols">
+        <li>eventos;</li><li>deeplinks;</li><li>segmentação;</li><li>jornada;</li>
+        <li>abandono;</li><li>conversão;</li><li>mensuração.</li>
+      </ul>
+    </section>
+
+    <section class="sec rv" id="s42">
+      <div class="sec__h"><a class="sec__n" href="#s42">§42</a><h3>TV de TODOS</h3></div>
+      <p>Projeto utilizado como laboratório de:</p>
+      <ul class="cols">
+        <li>lançamento;</li><li>ativação;</li><li>teste grátis;</li><li>Push;</li>
+        <li>In-App;</li><li>WhatsApp;</li><li>e-mail;</li><li>fadiga;</li><li>retomada.</li>
+      </ul>
+      <div class="note note--ok">
+        <p class="note__k">Leitura do piloto</p>
+        <p>Em uma das leituras do piloto, foram registrados 761 cadastros acumulados, pico de 324 em um único dia e CTR de In-App de 6,41%.</p>
+      </div>
+      <p>A combinação:</p>
+      <div class="pull"><p>WhatsApp + benefício simples + “grátis” + ativação fácil</p></div>
+      <p>gerou os maiores picos.</p>
+    </section>
+
+    <section class="sec rv" id="s43">
+      <div class="sec__h"><a class="sec__n" href="#s43">§43</a><h3>Figurinhas / Copa de TODOS</h3></div>
+      <p>É o principal case de projeto integrado da Mesa.</p>
+      <p>Combinou:</p>
+      <div class="tags">
+        <span class="tag">físico</span><span class="tag">digital</span><span class="tag">app</span>
+        <span class="tag">franquia</span><span class="tag">produto</span><span class="tag">venda</span>
+        <span class="tag">retirada</span><span class="tag">bolão</span><span class="tag">Push</span>
+        <span class="tag">In-App</span><span class="tag">WhatsApp</span><span class="tag">e-mail</span>
+        <span class="tag">Meta</span><span class="tag">micromomentos</span><span class="tag">Copa</span>
+        <span class="tag">CRM</span>
+      </div>
+      <p>O projeto atingiu grande escala comercial e digital e mostrou especialmente que <strong>contexto e timing tiveram mais eficiência do que comunicação massiva isolada</strong>.</p>
+      <div class="note note--rule">
+        <p class="note__k">Aprendizado</p>
+        <p>Não foi “o Push” que fez o resultado.</p>
+        <p>Foi a combinação:</p>
+        <p><strong>produto + oferta + momento + CRM + mídia + recorrência.</strong></p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s44">
+      <div class="sec__h"><a class="sec__n" href="#s44">§44</a><h3>Cross-selling</h3></div>
+      <p>Cross-sell deve permanecer como uma frente apoiada por Engajamento.</p>
+      <p>O papel da Mesa é construir a jornada para que uma oportunidade comercial de outra UDN consiga chegar ao filiado de forma inteligente.</p>
+      <p>O case TIM é um bom exemplo.</p>
+      <p>A lógica foi:</p>
+      <div class="flow">
+        <span class="flow__s">comunicação</span><span class="flow__a">→</span>
+        <span class="flow__s">clique</span><span class="flow__a">→</span>
+        <span class="flow__s">intenção</span><span class="flow__a">→</span>
+        <span class="flow__s">registro</span><span class="flow__a">→</span>
+        <span class="flow__s">pipeline</span><span class="flow__a">→</span>
+        <span class="flow__s">LP</span><span class="flow__a">→</span>
+        <span class="flow__s">contato da franquia</span>
+      </div>
+      <p>Ou seja, Engajamento não precisava ser o vendedor do produto.</p>
+      <p>Precisava construir a ponte entre <strong>cliente elegível e oportunidade comercial</strong>.</p>
+      <h5>Modelo para qualquer cross-sell</h5>
+      <ol class="cols">
+        <li>produto;</li><li>público elegível;</li><li>benefício;</li><li>argumento;</li>
+        <li>canal;</li><li>CTA;</li><li>captura de intenção;</li><li>pipeline;</li>
+        <li>handoff;</li><li>conversão.</li>
+      </ol>
+    </section>
+
+    <!-- ══════════════ PARTE VI ══════════════ -->
+    <section class="part rv" data-part id="p6" aria-labelledby="p6h">
+      <div class="part__glow" aria-hidden="true"></div>
+      <div class="part__rule"><span class="part__n">PARTE VI</span><span class="part__line"></span><span class="part__time" data-time></span></div>
+      <h2 id="p6h">CX e relacionamento</h2>
+      <p class="part__d">Onde a escuta vira CRM: dor, público, jornada — e a linguagem que faz a mensagem parecer feita para uma pessoa.</p>
+    </section>
+
+    <section class="sec rv" id="s45">
+      <div class="sec__h"><a class="sec__n" href="#s45">§45</a><h3>CX</h3></div>
+      <p>Engajamento sempre funcionou como parceiro de CX.</p>
+      <p>Não significa absorver toda demanda de experiência.</p>
+      <p>Significa entrar quando existe algo que pode ser resolvido ou influenciado por:</p>
+      <ul class="cols">
+        <li>CRM;</li><li>jornada;</li><li>informação;</li>
+        <li>comunicação;</li><li>segmentação;</li><li>comportamento.</li>
+      </ul>
+      <p>Exemplos:</p>
+      <ul class="cols">
+        <li>adimplência;</li><li>retenção;</li><li>desfiliação;</li><li>VoC;</li>
+        <li>Birdie;</li><li>pesquisa;</li><li>NPS;</li><li>recuperação;</li>
+        <li>educação de app;</li><li>Central de Faturas.</li>
+      </ul>
+    </section>
+
+    <section class="sec rv" id="s46">
+      <div class="sec__h"><a class="sec__n" href="#s46">§46</a><h3>VoC e Birdie</h3></div>
+      <p>A lógica deve ser:</p>
+      <div class="pull"><p>dor → público → ação.</p></div>
+      <p>Não:</p>
+      <div class="pull"><p>dor → apresentação.</p></div>
+      <p>Quando pesquisa aponta uma fricção, perguntar:</p>
+      <ul>
+        <li>conseguimos identificar quem sofre isso?</li>
+        <li>existe comunicação preventiva?</li>
+        <li>conseguimos educar?</li>
+        <li>conseguimos criar jornada?</li>
+        <li>conseguimos medir mudança?</li>
+      </ul>
+      <p>É assim que a escuta vira CRM.</p>
+    </section>
+
+    <section class="sec rv" id="s47">
+      <div class="sec__h"><a class="sec__n" href="#s47">§47</a><h3>Retenção e churn</h3></div>
+      <p>A área apoia a transformação de sinais de risco em jornadas.</p>
+      <p>Exemplos:</p>
+      <ul class="cols">
+        <li>sem uso;</li><li>baixo uso;</li><li>inadimplência;</li><li>reclamação;</li>
+        <li>cancelamento;</li><li>experiência negativa;</li><li>abandono.</li>
+      </ul>
+      <p>O papel não é bombardear quem quer cancelar.</p>
+      <p>É tentar antecipar a causa.</p>
+    </section>
+
+    <section class="sec rv" id="s48">
+      <div class="sec__h"><a class="sec__n" href="#s48">§48</a><h3>Adimplência</h3></div>
+      <p>A lógica desenvolvida combina:</p>
+      <ul>
+        <li>prevenção;</li><li>atraso;</li><li>saldo;</li>
+        <li>situação de pagamento;</li><li>Central de Faturas.</li>
+      </ul>
+      <div class="note note--rule">
+        <p class="note__k">Regra operacional mais importante</p>
+        <p><strong>revalidar status antes de cada comunicação.</strong></p>
+        <p>Cliente já regularizado deve sair imediatamente da régua.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s49">
+      <div class="sec__h"><a class="sec__n" href="#s49">§49</a><h3>Onboarding e ongoing</h3></div>
+      <p>Mesmo quando operacionalizados por outras pessoas/frentes, Engajamento deve apoiar esses fluxos porque são centrais para criação de hábito.</p>
+      <div class="grid2">
+        <div class="note">
+          <p class="note__k">Onboarding</p>
+          <p>Objetivo:</p>
+          <p><strong>primeiro valor percebido.</strong></p>
+          <p>Não explicar o ecossistema inteiro.</p>
+        </div>
+        <div class="note">
+          <p class="note__k">Ongoing</p>
+          <p>Objetivo:</p>
+          <p><strong>manter relacionamento e gerar recorrência.</strong></p>
+          <p>Usa:</p>
+          <ul>
+            <li>benefício;</li><li>saldo;</li><li>parceiros;</li>
+            <li>oportunidades;</li><li>sazonalidades;</li><li>uso.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s50">
+      <div class="sec__h"><a class="sec__n" href="#s50">§50</a><h3>Micromomentos</h3></div>
+      <p>Micromomento é quando:</p>
+      <div class="pull"><p>algo que está acontecendo agora encontra algo que podemos oferecer agora.</p></div>
+      <p>Pode ser:</p>
+      <ul class="cols">
+        <li>jogo;</li><li>clima;</li><li>meme;</li><li>festival;</li><li>pagamento;</li>
+        <li>almoço;</li><li>fim de mês;</li><li>evento nacional;</li>
+        <li>evento regional;</li><li>cultura pop.</li>
+      </ul>
+      <p>A janela é curta.</p>
+      <p>A área precisa ter autonomia para reagir rapidamente.</p>
+    </section>
+
+    <section class="sec rv" id="s51">
+      <div class="sec__h"><a class="sec__n" href="#s51">§51</a><h3>Filosofia de copy</h3></div>
+      <p>A mensagem deve parecer feita para uma pessoa.</p>
+      <p>Não para uma base.</p>
+      <div class="grid2">
+        <div class="note note--ok">
+          <p class="note__k">Princípios</p>
+          <ul>
+            <li>benefício primeiro;</li><li>texto curto;</li><li>linguagem popular;</li>
+            <li>contexto;</li><li>proximidade;</li><li>simplicidade;</li>
+            <li>personalização;</li><li>leve humor quando pertinente;</li>
+            <li>dinheiro de volta/dindim de volta quando mais claro.</li>
+          </ul>
+        </div>
+        <div class="note note--risk">
+          <p class="note__k">Evitar</p>
+          <ul>
+            <li>institucionalês;</li><li>excesso de inglês;</li><li>texto burocrático;</li>
+            <li>CTA genérico;</li><li>repetição;</li><li>urgência falsa.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s52">
+      <div class="sec__h"><a class="sec__n" href="#s52">§52</a><h3>Personalização</h3></div>
+      <p>Sempre que possível usar:</p>
+      <ul class="cols">
+        <li>nome;</li><li>saldo;</li><li>parceiro;</li><li>cidade;</li>
+        <li>franquia;</li><li>categoria;</li><li>comportamento;</li>
+        <li>momento da jornada.</li>
+      </ul>
+      <p>A personalização precisa vir de propriedade confiável.</p>
+      <p>Não de improvisação.</p>
+    </section>
+
+    <!-- ══════════════ PARTE VII ══════════════ -->
+    <section class="part rv" data-part id="p7" aria-labelledby="p7h">
+      <div class="part__glow" aria-hidden="true"></div>
+      <div class="part__rule"><span class="part__n">PARTE VII</span><span class="part__line"></span><span class="part__time" data-time></span></div>
+      <h2 id="p7h">Medição, riscos e transição</h2>
+      <p class="part__d">Como ler resultado, o que está concentrado em poucas pessoas e o que precisa estar inventariado antes da troca definitiva.</p>
+    </section>
+
+    <section class="sec rv" id="s53">
+      <div class="sec__h"><a class="sec__n" href="#s53">§53</a><h3>Como medir</h3></div>
+      <p>A leitura ocorre em três níveis.</p>
+      <div class="grid3">
+        <div class="note">
+          <p class="note__k">Canal</p>
+          <ul>
+            <li>enviado;</li><li>entregue;</li><li>impressão;</li><li>clique;</li>
+            <li>CTR;</li><li>abertura;</li><li>leitura;</li><li>custo.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Comportamento</p>
+          <ul>
+            <li>abriu app;</li><li>acessou;</li><li>comprou;</li><li>usou;</li>
+            <li>marcou;</li><li>fez cash-in;</li><li>fez cash-out;</li>
+            <li>resgatou;</li><li>retornou;</li><li>respondeu.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Negócio</p>
+          <ul>
+            <li>MAU;</li><li>utilização;</li><li>recorrência;</li><li>cash-in;</li>
+            <li>cash-out;</li><li>venda;</li><li>ativação;</li>
+            <li>retenção;</li><li>churn;</li><li>receita.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note note--rule">
+        <p class="note__k">Regra</p>
+        <p>CTR é bússola.</p>
+        <p>Não é o destino.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s54">
+      <div class="sec__h"><a class="sec__n" href="#s54">§54</a><h3>Método de análise</h3></div>
+      <p>Todo report precisa responder:</p>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table>
+        <thead><tr><th>Pergunta</th><th>O que entra</th></tr></thead>
+        <tbody>
+          <tr><td>O que aconteceu?</td><td>Número.</td></tr>
+          <tr><td>Comparado com quê?</td><td>Referência.</td></tr>
+          <tr><td>Por que aconteceu?</td><td>Hipótese.</td></tr>
+          <tr><td>O que aprendemos?</td><td>Leitura.</td></tr>
+          <tr><td>O que vamos fazer?</td><td>Decisão.</td></tr>
+        </tbody>
+      </table></div></div>
+      <div class="pull">
+        <p>Se não existe decisão, existe relatório.</p>
+        <p>Não inteligência.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s55">
+      <div class="sec__h"><a class="sec__n" href="#s55">§55</a><h3>O ativo mais importante da Mesa</h3></div>
+      <p>Não é:</p>
+      <ul>
+        <li>CleverTap;</li><li>campanha;</li><li>calendário;</li><li>API.</li>
+      </ul>
+      <p>É a capacidade de combinar:</p>
+      <div class="flow">
+        <span class="flow__s">dado</span><span class="flow__a">+</span>
+        <span class="flow__s">comportamento</span><span class="flow__a">+</span>
+        <span class="flow__s">criatividade</span><span class="flow__a">+</span>
+        <span class="flow__s">tecnologia</span><span class="flow__a">+</span>
+        <span class="flow__s">velocidade</span>
+      </div>
+      <div class="pull">
+        <p>A tecnologia potencializou essa cultura.</p>
+        <p>Não criou a cultura.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s56">
+      <div class="sec__h"><a class="sec__n" href="#s56">§56</a><h3>Riscos para a transição</h3></div>
+      <div class="grid2">
+        <div class="note note--risk">
+          <p class="note__k">Conhecimento concentrado</p>
+          <p>Principalmente:</p>
+          <ul><li>CleverTap;</li><li>APIs;</li><li>integrações;</li><li>properties;</li><li>scripts.</li></ul>
+        </div>
+        <div class="note note--warn">
+          <p class="note__k">Dependência de Victor e Felipe</p>
+          <p>Mitigar com documentação e shadowing.</p>
+        </div>
+        <div class="note note--warn">
+          <p class="note__k">Dependência criativa de Michel</p>
+          <p>Garantir continuidade de seu papel estratégico.</p>
+        </div>
+        <div class="note note--warn">
+          <p class="note__k">Fragilidade operacional em TV</p>
+          <p>Manter acompanhamento próximo.</p>
+        </div>
+        <div class="note note--warn">
+          <p class="note__k">Proatividade gerando excesso de demandas</p>
+          <p>Criar regra de priorização.</p>
+        </div>
+        <div class="note note--risk">
+          <p class="note__k">Dados sem owner</p>
+          <p>Toda propriedade precisa ter dono e fonte oficial.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s57">
+      <div class="sec__h"><a class="sec__n" href="#s57">§57</a><h3>Handoff técnico obrigatório</h3></div>
+      <p>Antes da troca definitiva de gestão deve existir um inventário contendo:</p>
+
+      <ul class="check" id="handoff" data-store="cdt-playbook-handoff">
+        <li class="check__bar" role="presentation">
+          <span id="handoffCount">0 / 0</span>
+          <span class="check__track"><span class="check__fill" id="handoffFill"></span></span>
+          <button class="btn" id="handoffReset" type="button">Limpar</button>
+        </li>
+      </ul>
+
+      <div class="grid2">
+        <div class="note">
+          <p class="note__k">CleverTap</p>
+          <ul class="cols">
+            <li>usuários;</li><li>permissões;</li><li>projetos;</li><li>journeys;</li>
+            <li>campanhas;</li><li>segmentos;</li><li>eventos;</li><li>properties;</li>
+            <li>dashboards;</li><li>frequência;</li><li>templates;</li><li>deeplinks.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">APIs</p>
+          <ul class="cols">
+            <li>scripts;</li><li>repositório;</li><li>documentação;</li><li>owner;</li>
+            <li>dependências;</li><li>tabelas;</li><li>agendamento;</li>
+            <li>logs;</li><li>retry;</li><li>segurança.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Data Lake</p>
+          <ul>
+            <li>tabelas utilizadas;</li><li>queries;</li><li>campos;</li>
+            <li>periodicidade;</li><li>filtros;</li><li>regras.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">RFV</p>
+          <ul>
+            <li>critérios;</li><li>thresholds;</li>
+            <li>rotina de atualização;</li><li>nomenclatura.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Cupons</p>
+          <ul>
+            <li>planilha padrão;</li><li>script;</li><li>estimate;</li>
+            <li>QA;</li><li>publish;</li><li>log.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s58">
+      <div class="sec__h"><a class="sec__n" href="#s58">§58</a><h3>Documentação de propriedades recomendada</h3></div>
+      <p>Criar uma tabela única e mantê-la viva:</p>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table>
+        <thead><tr><th>Property</th><th>Descrição</th><th>Tipo</th><th>Fonte</th><th>Atualização</th><th>Owner</th><th>Usada em</th></tr></thead>
+        <tbody>
+          <tr><td>saldo</td><td>saldo atual</td><td>number</td><td>Lake</td><td>recorrente</td><td>Dados/Eng</td><td>cash-out</td></tr>
+          <tr><td>dt_ultimo_cashin</td><td>último cash-in</td><td>date</td><td>Lake</td><td>recorrente</td><td>Dados/Eng</td><td>reativação</td></tr>
+          <tr><td>adimplencia</td><td>status</td><td>string</td><td>Lake</td><td>recorrente</td><td>Dados/Eng</td><td>CX</td></tr>
+          <tr><td>cidade</td><td>cidade</td><td>string</td><td>Lake</td><td>recorrente</td><td>Dados/Eng</td><td>Local</td></tr>
+          <tr><td>franchise</td><td>franquia</td><td>string</td><td>Lake</td><td>recorrente</td><td>Dados/Eng</td><td>Local</td></tr>
+          <tr><td>RFV</td><td>cluster</td><td>string</td><td>cálculo</td><td>recorrente</td><td>Eng/Dados</td><td>segmentação</td></tr>
+        </tbody>
+      </table></div></div>
+    </section>
+
+    <section class="sec rv" id="s59">
+      <div class="sec__h"><a class="sec__n" href="#s59">§59</a><h3>Checklist para uma nova campanha</h3></div>
+      <div class="grid3">
+        <div class="note">
+          <p class="note__k">Antes</p>
+          <ul>
+            <li>qual objetivo?</li><li>qual comportamento?</li><li>qual público?</li>
+            <li>qual dado sustenta?</li><li>existe exclusão?</li><li>qual canal?</li>
+            <li>qual benefício?</li><li>qual CTA?</li><li>qual deeplink?</li>
+            <li>qual frequência?</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Durante</p>
+          <ul>
+            <li>entregabilidade;</li><li>impressão;</li><li>clique;</li>
+            <li>comportamento;</li><li>problema técnico.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <p class="note__k">Depois</p>
+          <ul>
+            <li>resultado;</li><li>comparação;</li>
+            <li>aprendizado;</li><li>ação seguinte.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s60">
+      <div class="sec__h"><a class="sec__n" href="#s60">§60</a><h3>Checklist para nova integração</h3></div>
+      <ol class="cols">
+        <li>fonte de dados;</li><li>Identity;</li><li>property/event;</li><li>formato;</li>
+        <li>periodicidade;</li><li>API;</li><li>lote;</li><li>retry;</li>
+        <li>log;</li><li>validação;</li><li>Find People;</li><li>segmento;</li>
+        <li>estimate;</li><li>campanha;</li><li>resultado.</li>
+      </ol>
+    </section>
+
+    <section class="sec rv" id="s61">
+      <div class="sec__h"><a class="sec__n" href="#s61">§61</a><h3>Glossário técnico</h3></div>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table>
+        <thead><tr><th>Termo</th><th>Definição</th></tr></thead>
+        <tbody>
+          <tr><td>CleverTap</td><td>Plataforma de engagement responsável principalmente por perfis, propriedades, eventos, segmentação, Push, In-App, Journeys e analytics do app.</td></tr>
+          <tr><td>Data Lake</td><td>Camada corporativa em que estão armazenados dados utilizados para enriquecer CRM.</td></tr>
+          <tr><td>Athena</td><td>Ferramenta utilizada para consulta a dados armazenados no ambiente AWS.</td></tr>
+          <tr><td>Identity</td><td>Identificador usado para associar dado ao usuário correto.</td></tr>
+          <tr><td>Profile</td><td>Perfil do usuário na CleverTap.</td></tr>
+          <tr><td>Property</td><td>Informação associada ao perfil.</td></tr>
+          <tr><td>Event</td><td>Comportamento realizado pelo usuário.</td></tr>
+          <tr><td>Segment</td><td>Grupo construído a partir de properties e/ou events.</td></tr>
+          <tr><td>Journey</td><td>Fluxo automatizado de CRM.</td></tr>
+          <tr><td>Push</td><td>Notificação enviada ao dispositivo.</td></tr>
+          <tr><td>In-App</td><td>Mensagem exibida dentro do aplicativo.</td></tr>
+          <tr><td>Deeplink</td><td>Link que leva a uma tela específica.</td></tr>
+          <tr><td>API</td><td>Integração que permite troca estruturada de dados ou comandos entre sistemas.</td></tr>
+          <tr><td>Upload API</td><td>API utilizada para atualizar perfis/propriedades.</td></tr>
+          <tr><td>Target API</td><td>API utilizada na automação de criação de campanhas.</td></tr>
+          <tr><td>RFV</td><td>Recência, Frequência e Valor.</td></tr>
+          <tr><td>Cash-in</td><td>Geração de saldo/benefício.</td></tr>
+          <tr><td>Cash-out</td><td>Utilização do saldo.</td></tr>
+          <tr><td>MAU</td><td>Usuários ativos mensais.</td></tr>
+          <tr><td>CTR</td><td>Taxa de clique.</td></tr>
+          <tr><td>VoC</td><td>Voice of Customer.</td></tr>
+          <tr><td>UDN</td><td>Unidade de negócio.</td></tr>
+          <tr><td>Cross-sell</td><td>Oferta de outro produto ou serviço para uma base já existente.</td></tr>
+          <tr><td>Micromomento</td><td>Janela contextual curta de alta relevância.</td></tr>
+        </tbody>
+      </table></div></div>
+    </section>
+
+    <section class="sec rv" id="s62">
+      <div class="sec__h"><a class="sec__n" href="#s62">§62</a><h3>O que a nova gestão precisa preservar</h3></div>
+      <div class="grid2">
+        <div class="note note--rule"><p class="note__k">Primeiro</p><p>Engajamento não é fábrica de Push.</p></div>
+        <div class="note note--rule"><p class="note__k">Segundo</p><p>CleverTap não é somente ferramenta de disparo.</p></div>
+        <div class="note note--rule"><p class="note__k">Terceiro</p><p>Data Lake não deve ficar desconectado de CRM.</p></div>
+        <div class="note note--rule"><p class="note__k">Quarto</p><p>A área construiu capacidade própria de integração e automação.</p></div>
+        <div class="note note--rule"><p class="note__k">Quinto</p><p>Cross-selling e CX continuam precisando desse braço de Engajamento.</p></div>
+        <div class="note note--rule"><p class="note__k">Sexto</p><p>O time funciona bem porque existe espaço para iniciativa.</p></div>
+      </div>
+      <div class="note note--rule">
+        <p class="note__k">Sétimo</p>
+        <p>O resultado não vem do volume de comunicação.</p>
+        <p>Vem da relevância.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="s63">
+      <div class="sec__h"><a class="sec__n" href="#s63">§63</a><h3>Síntese final</h3></div>
+      <p>A área evoluiu de uma operação de campanhas para uma estrutura que hoje combina:</p>
+      <div class="tags">
+        <span class="tag">estratégia</span><span class="tag">CRM</span><span class="tag">CleverTap</span>
+        <span class="tag">Data Lake</span><span class="tag">APIs</span>
+        <span class="tag">segmentação comportamental</span><span class="tag">criatividade</span>
+        <span class="tag">performance</span><span class="tag">produto</span>
+        <span class="tag">apoio a CX e novas oportunidades de negócio</span>
+      </div>
+      <p>A Mesa ajudou a construir as próprias condições técnicas que permitiram essa evolução:</p>
+      <ul class="cols">
+        <li>propriedades;</li><li>saldo;</li><li>comportamento de cash-in;</li>
+        <li>adimplência;</li><li>localização;</li><li>RFV;</li>
+        <li>integração com Lake;</li><li>APIs;</li><li>automação de campanhas;</li>
+        <li>segmentação;</li><li>Journeys;</li><li>Push;</li><li>In-App.</li>
+      </ul>
+      <p>Por isso, o maior risco de uma troca de gestão seria reduzir novamente a área à execução de calendário.</p>
+      <p>O que precisa continuar existindo é a lógica:</p>
+      <div class="flow">
+        <span class="flow__s">entender o cliente</span><span class="flow__a">→</span>
+        <span class="flow__s">encontrar o dado</span><span class="flow__a">→</span>
+        <span class="flow__s">reconhecer o momento</span><span class="flow__a">→</span>
+        <span class="flow__s">criar a jornada</span><span class="flow__a">→</span>
+        <span class="flow__s">provocar comportamento</span><span class="flow__a">→</span>
+        <span class="flow__s">medir</span><span class="flow__a">→</span>
+        <span class="flow__s">aprender</span><span class="flow__a">→</span>
+        <span class="flow__s">agir novamente</span>
+      </div>
+      <p>É isso que hoje define Engajamento no Cartão de TODOS.</p>
+    </section>
+
+    <footer class="foot rv">
+      <p>
+        <b>Playbook de Gestão · CRM &amp; Engajamento</b><br />
+        Manual de operação, tecnologia, pessoas, governança e continuidade.<br />
+        Cartão de TODOS · Agosto de 2026 · 63 seções.
+      </p>
+      <p>
+        Documento de passagem de gestão. Nenhuma credencial, chave ou senha deve ser
+        inserida aqui — ver <a href="#s32" style="color:#4ade80;text-decoration:none">§32</a>.
+      </p>
+    </footer>
+
+  </main>
+
+  <!-- ══════════ NESTA PÁGINA ══════════ -->
+  <aside class="toc" aria-label="Nesta página">
+    <div class="toc__ring">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+        <circle class="bg" cx="15" cy="15" r="12"/>
+        <circle class="fg" id="ring" cx="15" cy="15" r="12" stroke-dasharray="75.4" stroke-dashoffset="75.4"/>
+      </svg>
+      <span id="ringPct">0% lido</span>
+    </div>
+    <p class="toc__t">Nesta parte</p>
+    <ul class="toc__list" id="tocList"></ul>
+  </aside>
+</div>
+
+<button class="up" id="up" aria-label="Voltar ao topo">
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 12V3M3.5 7l4-4 4 4"/></svg>
+</button>
+
+<script>
+(() => {
+  "use strict";
+
+  const $  = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const rmq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const calm = () => rmq.matches;
+  const fine = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  /* ───────── 1. Sequência de entrada ───────── */
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add("is-loaded")));
+
+  /* ───────── 2. Revelação por scroll ───────── */
+  const revealables = $$(".rv");
+  if (calm() || !("IntersectionObserver" in window)) {
+    revealables.forEach(el => el.classList.add("is-in"));
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (!e.isIntersecting) return;
+        e.target.style.setProperty("--d", Math.min(i * 70, 210) + "ms");
+        e.target.classList.add("is-in");
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+    revealables.forEach(el => io.observe(el));
+  }
+
+  /* ───────── 3. Mapa partes → seções ───────── */
+  const parts = [];
+  let current = { el: null, id: "intro", name: "Introdução", secs: [] };
+  parts.push(current);
+  $$(".part, .sec[id]").forEach(el => {
+    if (el.classList.contains("part")) {
+      current = { el, id: el.id, name: $("h2", el).textContent.trim(), secs: [] };
+      parts.push(current);
+    } else {
+      current.secs.push(el);
+    }
+  });
+
+  /* ───────── 4. Tempo de leitura ───────── */
+  const words = (el) => (el.textContent.trim().match(/\S+/g) || []).length;
+  let totalWords = 0;
+  parts.forEach(p => {
+    const w = p.secs.reduce((a, s) => a + words(s), 0) + (p.el ? words(p.el) : 0);
+    totalWords += w;
+    const slot = p.el && $("[data-time]", p.el);
+    if (slot) slot.textContent = Math.max(1, Math.round(w / 200)) + " min";
+  });
+  const hero = words($(".hero"));
+  const totalMin = Math.max(1, Math.round((totalWords + hero) / 200));
+  $$("[data-total-time]").forEach(el => el.textContent = "~" + totalMin + " min");
+
+  /* ───────── 5. Índice: ativo + indicador ───────── */
+  const navLinks = $$(".nav__link");
+  const byId = new Map(navLinks.map(a => [a.getAttribute("href").slice(1), a]));
+  const indicators = new Map();
+  $$(".nav__list").forEach(list => {
+    const ind = document.createElement("span");
+    ind.className = "nav__ind";
+    list.prepend(ind);
+    indicators.set(list, ind);
+  });
+
+  const tocList = $("#tocList");
+  const crumb   = $("#crumb");
+  let activeId;          // indefinido até a primeira leitura de scroll
+  let activePart;
+
+  function paintToc(part) {
+    if (!tocList || activePart === part) return;
+    activePart = part;
+    tocList.innerHTML = "";
+    if (!part) return;
+    part.secs.forEach(s => {
+      const h = $("h3", s);
+      if (!h) return;
+      const li = document.createElement("li");
+      const a  = document.createElement("a");
+      a.href = "#" + s.id;
+      a.textContent = h.textContent.trim();
+      a.dataset.for = s.id;
+      li.appendChild(a);
+      tocList.appendChild(li);
+    });
+  }
+
+  function setActive(id) {
+    if (id === activeId) return;
+    activeId = id;
+
+    navLinks.forEach(a => a.classList.remove("is-active"));
+    const link = byId.get(id);
+    indicators.forEach(i => i.style.opacity = "0");
+
+    if (link) {
+      link.classList.add("is-active");
+      const list = link.closest(".nav__list");
+      const ind = indicators.get(list);
+      if (ind) {
+        const li = link.parentElement;
+        ind.style.opacity = "1";
+        ind.style.height = li.offsetHeight - 8 + "px";
+        ind.style.transform = "translateY(" + (li.offsetTop + 4) + "px)";
+      }
+      const box = $(".nav__scroll");
+      if (box) {
+        const top = link.offsetTop - box.clientHeight / 2;
+        if (Math.abs(box.scrollTop - top) > box.clientHeight / 2) {
+          box.scrollTo({ top, behavior: calm() ? "auto" : "smooth" });
+        }
+      }
+    }
+
+    const part = parts.find(p => p.secs.some(s => s.id === id)) || parts[0];
+    paintToc(part);
+    if (crumb) crumb.textContent = part.name;
+
+    if (tocList) {
+      $$("a", tocList).forEach(a => a.classList.toggle("is-active", a.dataset.for === id));
+    }
+  }
+
+  /* ───────── 6. Progresso + seção corrente ───────── */
+  const bar    = $("#pbar");
+  const ring   = $("#ring");
+  const ringPct= $("#ringPct");
+  const top    = $("#top");
+  const upBtn  = $("#up");
+  const RING   = 2 * Math.PI * 12;
+  const sections = $$(".sec[id]");
+  let ticking = false;
+
+  function onScroll() {
+    const y = window.scrollY;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = max > 0 ? clamp(y / max, 0, 1) : 0;
+
+    if (bar) bar.style.transform = "scaleX(" + p + ")";
+    if (ring) ring.style.strokeDashoffset = String(RING * (1 - p));
+    if (ringPct) ringPct.textContent = Math.round(p * 100) + "% lido";
+
+    top && top.classList.toggle("is-stuck", y > 12);
+    upBtn && upBtn.classList.toggle("is-on", y > 700);
+
+    const line = y + window.innerHeight * 0.28;
+    let found = null;
+    for (const s of sections) {
+      if (s.offsetTop <= line) found = s.id; else break;
+    }
+    setActive(found);
+    ticking = false;
+  }
+  addEventListener("scroll", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  addEventListener("resize", onScroll, { passive: true });
+  onScroll();
+
+  upBtn && upBtn.addEventListener("click", () =>
+    scrollTo({ top: 0, behavior: calm() ? "auto" : "smooth" }));
+
+  /* ───────── 7. Busca no índice ───────── */
+  const q = $("#navq");
+  const empty = $("#navEmpty");
+  const norm = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  q && q.addEventListener("input", () => {
+    const term = norm(q.value.trim());
+    let hits = 0;
+    $$(".nav__group").forEach(g => {
+      let shown = 0;
+      $$(".nav__link", g).forEach(a => {
+        const ok = !term || norm(a.textContent).includes(term);
+        a.classList.toggle("is-hidden", !ok);
+        if (ok) shown++;
+      });
+      g.classList.toggle("is-hidden", shown === 0);
+      hits += shown;
+    });
+    empty && empty.classList.toggle("is-on", hits === 0);
+  });
+
+  /* ───────── 8. Gaveta no mobile ───────── */
+  const nav = $("#nav"), burger = $("#burger"), scrim = $("#scrim");
+  const setDrawer = (open) => {
+    nav && nav.classList.toggle("is-open", open);
+    scrim && scrim.classList.toggle("is-on", open);
+    burger && burger.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+  burger && burger.addEventListener("click", () => setDrawer(!nav.classList.contains("is-open")));
+  scrim && scrim.addEventListener("click", () => setDrawer(false));
+  nav && nav.addEventListener("click", (e) => {
+    if (e.target.closest(".nav__link") && innerWidth <= 940) setDrawer(false);
+  });
+  addEventListener("keydown", (e) => { if (e.key === "Escape") setDrawer(false); });
+  addEventListener("resize", () => { if (innerWidth > 940) setDrawer(false); });
+
+  /* ───────── 9. Cursor ───────── */
+  if (fine() && !calm()) {
+    const ring2 = $(".cur"), dot = $(".cur-dot");
+    let tx = innerWidth / 2, ty = innerHeight / 2, rx = tx, ry = ty;
+    addEventListener("mousemove", (e) => {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.transform = "translate(" + tx + "px," + ty + "px)";
+      document.body.classList.add("cur-on");
+    }, { passive: true });
+    (function loop() {
+      rx += (tx - rx) * 0.18; ry += (ty - ry) * 0.18;
+      ring2.style.transform = "translate(" + rx + "px," + ry + "px)";
+      requestAnimationFrame(loop);
+    })();
+    const HOT = "a,button,input,summary,.track,.tag,.flow__s,tbody tr,label";
+    addEventListener("mouseover", (e) =>
+      document.body.classList.toggle("cur-hot", !!e.target.closest(HOT)), { passive: true });
+    addEventListener("mouseleave", () => document.body.classList.remove("cur-on"));
+  }
+
+  /* ───────── 10. Holofote sob o ponteiro ───────── */
+  if (fine() && !calm()) {
+    const spot = $$(".track, .btn");
+    spot.forEach(el => {
+      el.addEventListener("mousemove", (e) => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        el.style.setProperty("--my", (e.clientY - r.top) + "px");
+      }, { passive: true });
+    });
+  }
+
+  /* ───────── 11. Contadores ───────── */
+  const fmt = (n) => n.toLocaleString("pt-BR");
+  const figs = $$("[data-count]");
+  const settle = (el) => {
+    el.textContent = fmt(parseFloat(el.dataset.count)) + (el.dataset.suffix || "");
+  };
+  const runCount = (el) => {
+    if (el.dataset.done) return;
+    el.dataset.done = "1";
+    const end = parseFloat(el.dataset.count);
+    const suf = el.dataset.suffix || "";
+    if (calm()) { settle(el); return; }
+    const dur = 1250, t0 = performance.now();
+    const step = (t) => {
+      const k = clamp((t - t0) / dur, 0, 1);
+      el.textContent = fmt(Math.round(end * (1 - Math.pow(1 - k, 3)))) + suf;
+      if (k < 1) requestAnimationFrame(step); else settle(el);
+    };
+    requestAnimationFrame(step);
+  };
+  if (!calm() && "IntersectionObserver" in window) {
+    const co = new IntersectionObserver((es) => es.forEach(e => {
+      if (e.isIntersecting) { runCount(e.target); co.unobserve(e.target); }
+    }), { threshold: 0.5 });
+    figs.forEach(el => co.observe(el));
+  }
+  // imprimir nunca pode sair com o contador pela metade
+  addEventListener("beforeprint", () => figs.forEach(settle));
+
+  /* ───────── 12. Pipeline: desenho + pulso ───────── */
+  const loop = $("#loop"), flow = $("#loopFlow"), pulse = $("#pulse"), halo = $("#pulseH");
+  if (loop && flow && pulse && loop.getTotalLength) {
+    const L = loop.getTotalLength();
+    flow.style.strokeDasharray = L;
+    flow.style.strokeDashoffset = calm() ? 0 : L;
+    if (!calm()) {
+      setTimeout(() => {
+        flow.style.transition = "stroke-dashoffset 1.7s cubic-bezier(.16,1,.3,1)";
+        flow.style.strokeDashoffset = "0";
+      }, 620);
+
+      const nodes = $$(".pipe__svg .node");
+      const boxes = nodes.map(n => {
+        const r = $("rect", n);
+        return { n, a: +r.getAttribute("x"), b: +r.getAttribute("x") + +r.getAttribute("width") };
+      });
+      let d = 0;
+      const SPEED = 132; // unidades de viewBox por segundo
+      let last = performance.now();
+      (function travel(now) {
+        const dt = Math.min((now - last) / 1000, 0.05); last = now;
+        d = (d + SPEED * dt) % L;
+        const pt = loop.getPointAtLength(d);
+        pulse.setAttribute("cx", pt.x); pulse.setAttribute("cy", pt.y);
+        halo.setAttribute("cx", pt.x);  halo.setAttribute("cy", pt.y);
+        const onTop = pt.y < 60;
+        boxes.forEach(b =>
+          b.n.classList.toggle("node-lit", onTop && pt.x >= b.a && pt.x <= b.b));
+        requestAnimationFrame(travel);
+      })(last);
+    }
+  }
+
+  /* ───────── 13. Copiar ───────── */
+  const flash = (btn, ok) => {
+    const old = btn.innerHTML;
+    btn.innerHTML = ok
+      ? '<svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.2 3.2L12 4.6"/></svg>'
+      : '!';
+    setTimeout(() => { btn.innerHTML = old; }, 1400);
+  };
+  const copy = async (text) => {
+    try {
+      if (navigator.clipboard && isSecureContext) { await navigator.clipboard.writeText(text); return true; }
+    } catch (_) {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:fixed;top:-999px;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove(); return ok;
+    } catch (_) { return false; }
+  };
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-copy]");
+    if (!btn) return;
+    e.preventDefault();
+    flash(btn, await copy(btn.dataset.copy));
+  });
+
+  /* ───────── 14. Âncoras de seção ───────── */
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest(".sec__n");
+    if (!a || !a.getAttribute("href")) return;
+    const url = location.href.split("#")[0] + a.getAttribute("href");
+    copy(url);
+  });
+
+  /* ───────── 15. Imprimir ───────── */
+  const pb = $("#printBtn");
+  pb && pb.addEventListener("click", () => window.print());
+
+  /* ───────── 16. Checklist de handoff (§57) ───────── */
+  const box = $("#handoff");
+  if (box) {
+    const ITEMS = [
+      "Inventário de CleverTap entregue (usuários, permissões, projetos, journeys, campanhas, segmentos, eventos, properties, dashboards, frequência, templates, deeplinks).",
+      "Inventário de APIs entregue (scripts, repositório, documentação, owner, dependências, tabelas, agendamento, logs, retry, segurança).",
+      "Inventário de Data Lake entregue (tabelas utilizadas, queries, campos, periodicidade, filtros, regras).",
+      "Inventário de RFV entregue (critérios, thresholds, rotina de atualização, nomenclatura).",
+      "Inventário de Cupons entregue (planilha padrão, script, estimate, QA, publish, log).",
+      "Credenciais rotacionadas e removidas do código (§32).",
+      "Associação de data_ultimo_cashout validada e corrigida (§31)."
+    ];
+    const KEY = box.dataset.store;
+    let state = [];
+    try { state = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (_) { state = []; }
+    if (!Array.isArray(state)) state = [];
+
+    const tick = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2 5 8.7l4.6-5"/></svg>';
+    ITEMS.forEach((t, i) => {
+      const li = document.createElement("li");
+      li.innerHTML =
+        '<label><input type="checkbox" data-i="' + i + '"' + (state[i] ? " checked" : "") + ' />' +
+        '<span class="check__box">' + tick + '</span>' +
+        '<span class="check__t"></span></label>';
+      $(".check__t", li).textContent = t;
+      box.appendChild(li);
+    });
+
+    const count = $("#handoffCount"), fill = $("#handoffFill");
+    const sync = () => {
+      const done = $$('input[type="checkbox"]', box).filter(c => c.checked).length;
+      count.textContent = done + " / " + ITEMS.length;
+      fill.style.width = (done / ITEMS.length * 100) + "%";
+    };
+    box.addEventListener("change", (e) => {
+      const c = e.target;
+      if (!c.matches('input[type="checkbox"]')) return;
+      state[+c.dataset.i] = c.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {}
+      sync();
+    });
+    $("#handoffReset").addEventListener("click", () => {
+      state = [];
+      try { localStorage.removeItem(KEY); } catch (_) {}
+      $$('input[type="checkbox"]', box).forEach(c => c.checked = false);
+      sync();
+    });
+    sync();
+  }
+})();
+</script>
+</body>
+</html>
